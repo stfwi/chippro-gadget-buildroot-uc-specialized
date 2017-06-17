@@ -1,0 +1,251 @@
+#
+# Basic inspection of the system and file system of the CHIPpro.
+#
+# Note: CHIPpro hostname: cos, user: cos, (guess the password).
+
+root@cos:~# uname -a
+Linux cos 4.4.66 #1 SMP PREEMPT Wed Jun 14 18:40:20 UTC 2017 armv7l GNU/Linux
+
+#--------------------------------------------------------------------------------------
+
+root@cos:~# free
+             total       used       free     shared    buffers     cached
+Mem:        253788      38396     215392         88          0      10420
+-/+ buffers/cache:      27976     225812
+Swap:            0          0          0
+
+#--------------------------------------------------------------------------------------
+
+root@cos:~# df -h
+Filesystem                Size      Used Available Use% Mounted on
+ubi0:rootfs             438.4M     24.9M    413.5M   6% /
+devtmpfs                 91.8M         0     91.8M   0% /dev
+tmpfs                   123.9M         0    123.9M   0% /dev/shm
+tmpfs                   123.9M      8.0K    123.9M   0% /tmp
+tmpfs                   123.9M     40.0K    123.9M   0% /run
+tmpfs                     5.0M     40.0K      5.0M   1% /var/log
+cgroup                  123.9M         0    123.9M   0% /sys/fs/cgroup
+
+#--------------------------------------------------------------------------------------
+
+root@cos:~# mount
+ubi0:rootfs on / type ubifs (rw,relatime)
+devtmpfs on /dev type devtmpfs (rw,relatime,size=93996k,nr_inodes=23499,mode=755)
+proc on /proc type proc (rw,relatime)
+devpts on /dev/pts type devpts (rw,relatime,gid=5,mode=620)
+tmpfs on /dev/shm type tmpfs (rw,relatime,mode=777)
+tmpfs on /tmp type tmpfs (rw,relatime)
+tmpfs on /run type tmpfs (rw,nosuid,nodev,relatime,mode=755)
+sysfs on /sys type sysfs (rw,relatime)
+tmpfs on /var/log type tmpfs (rw,nosuid,nodev,relatime,size=5120k,mode=777)
+none on /sys/kernel/debug type debugfs (rw,relatime)
+none on /sys/kernel/config type configfs (rw,relatime)
+cgroup on /sys/fs/cgroup type tmpfs (rw,relatime,mode=755)
+cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,relatime,cpuset)
+cgroup on /sys/fs/cgroup/cpu type cgroup (rw,relatime,cpu)
+cgroup on /sys/fs/cgroup/cpuacct type cgroup (rw,relatime,cpuacct)
+cgroup on /sys/fs/cgroup/blkio type cgroup (rw,relatime,blkio)
+cgroup on /sys/fs/cgroup/memory type cgroup (rw,relatime,memory)
+cgroup on /sys/fs/cgroup/devices type cgroup (rw,relatime,devices)
+cgroup on /sys/fs/cgroup/freezer type cgroup (rw,relatime,freezer)
+cgroup on /sys/fs/cgroup/net_cls type cgroup (rw,relatime,net_cls)
+cgroup on /sys/fs/cgroup/perf_event type cgroup (rw,relatime,perf_event)
+cgroup on /sys/fs/cgroup/net_prio type cgroup (rw,relatime,net_prio)
+cgroup on /sys/fs/cgroup/pids type cgroup (rw,relatime,pids)
+
+#--------------------------------------------------------------------------------------
+
+root@cos:~# lsmod
+Module                  Size  Used by
+af_packet              30107  8
+hci_uart               47494  1
+btbcm                   5541  1 hci_uart
+btintel                 6054  1 hci_uart
+cmac                    2529  0
+ecb                     1883  0
+iptable_nat             1659  0
+nf_conntrack_ipv4      11715  1
+nf_defrag_ipv4          1255  1 nf_conntrack_ipv4
+nf_nat_ipv4             4505  1 iptable_nat
+nf_nat                 10804  1 nf_nat_ipv4
+nf_conntrack           63404  3 nf_nat,nf_nat_ipv4,nf_conntrack_ipv4
+bluetooth             381470  4 btbcm,hci_uart,btintel
+ipv6                  296017  30
+ohci_platform           4203  0
+ohci_hcd               32507  1 ohci_platform
+ehci_platform           4962  0
+ehci_hcd               54161  1 ehci_platform
+evdev                  10851  0
+usb_f_acm               5541  2
+u_serial                9418  3 usb_f_acm
+libcomposite           35606  10 usb_f_acm
+sun4i_lradc             3535  0
+industrialio           25734  1 sun4i_lradc
+gluebi                  3919  0
+8723ds               1534202  0
+cfg80211              213306  1 8723ds
+sunxi                   7736  0
+musb_hdrc              66990  1 sunxi
+udc_core                8448  2 musb_hdrc,libcomposite
+phy_generic             4210  2 sunxi
+phy_sun4i_usb           7190  6 sunxi
+usbcore               158734  5 musb_hdrc,ohci_platform,ohci_hcd,ehci_hcd,ehci_platform
+usb_common              2583  5 sunxi,musb_hdrc,udc_core,libcomposite,usbcore
+unix                   27999  28
+
+#--------------------------------------------------------------------------------------
+
+root@cos:~# ps
+PID   USER     COMMAND
+    1 root     init
+    2 root     [kthreadd]
+    3 root     [ksoftirqd/0]
+    4 root     [kworker/0:0]
+    5 root     [kworker/0:0H]
+    6 root     [kworker/u2:0]
+    7 root     [rcu_preempt]
+    8 root     [rcu_sched]
+    9 root     [rcu_bh]
+   10 root     [migration/0]
+   11 root     [watchdog/0]
+   12 root     [kdevtmpfs]
+   13 root     [netns]
+   14 root     [perf]
+   15 root     [khungtaskd]
+   16 root     [writeback]
+   17 root     [crypto]
+   18 root     [bioset]
+   19 root     [kblockd]
+   20 root     [devfreq_wq]
+   22 root     [kswapd0]
+   23 root     [vmstat]
+   24 root     [fsnotify_mark]
+   33 root     [kthrotld]
+   34 root     [bioset]
+   35 root     [bioset]
+   36 root     [bioset]
+   37 root     [bioset]
+   38 root     [bioset]
+   39 root     [kpsmoused]
+   40 root     [irq/67-axp20x_i]
+   41 root     [deferwq]
+   43 root     [irq/20-sunxi-mm]
+   44 root     [ubi_bgt0d]
+   45 root     [ubifs_bgt0_3]
+   49 root     /sbin/getty -L ttyS0 115200 vt100
+   56 root     [kworker/0:2]
+   59 root     [cfg80211]
+   61 root     [ksdioirqd/mmc0]
+   63 root     [bioset]
+   64 root     [bioset]
+   65 root     [bioset]
+   66 root     [bioset]
+   84 root     {usb-serial-gadg} /bin/sh /usr/sbin/usb-serial-gadget-getty
+   96 root     /sbin/klogd -n
+   97 root     /sbin/syslogd -n
+   99 root     [kworker/u2:2]
+  192 dbus     dbus-daemon --system
+  211 root     /usr/sbin/connmand -n
+  221 root     [ipv6_addrconf]
+  222 root     /usr/sbin/ntpd -g
+  226 root     /usr/sbin/sshd
+  260 root     /usr/sbin/wpa_supplicant -u
+  283 root     /sbin/rtk_hciattach -n -s 115200 /dev/ttyS2 rtk_h5
+  288 www-data /usr/bin/civetweb /etc/civetweb.conf
+  343 root     [RTW_XMIT_THREAD]
+  344 root     [RTW_CMD_THREAD]
+  345 root     [RTWHALXT]
+  346 root     [RTWHALXT]
+  349 root     [kworker/u3:0]
+  350 root     [hci0]
+  351 root     [hci0]
+  354 root     [kworker/u3:2]
+  358 root     -sh
+  373 root     ps
+
+#--------------------------------------------------------------------------------------
+# @note: The bloody legacy ttys are still there although unselected
+
+root@cos:~# ls -lsia /dev/
+total 0
+      3      0 drwxr-xr-x    6 root     root       12.6K Jan  1  1970 .
+      1      0 drwxr-xr-x   18 root     root        1.3K Jun 14 18:42 ..
+   1579      0 drwxr-xr-x    3 root     root          60 Jan  1  1970 bus
+     49      0 crw-------    1 root     tty         5,   1 Jan  1  1970 console
+    738      0 crw-rw----    1 root     root       10,  63 Jan  1  1970 cpu_dma_latency
+     44      0 crw-rw-rw-    1 root     root        1,   7 Jan  1  1970 full
+    692      0 crw-rw----    1 root     root       89,   0 Jan  1  1970 i2c-0
+    730      0 crw-rw----    1 root     root       89,   1 Jan  1  1970 i2c-1
+   1625      0 crw-------    1 root     root      247,   0 Jan  1  1970 iio:device0
+    689      0 drwxr-xr-x    2 root     root          80 Jan  1  1970 input
+     41      0 crw-r-----    1 root     root        1,   2 Jan  1  1970 kmem
+     47      0 crw-rw----    1 root     root        1,  11 Jan  1  1970 kmsg
+   1670      0 srw-rw-rw-    1 root     root           0 Jan  1  1970 log
+     40      0 crw-r-----    1 root     root        1,   1 Jan  1  1970 mem
+    744      0 crw-rw----    1 root     root       10,  60 Jan  1  1970 memory_bandwidth
+    664      0 crw-rw----    1 root     root       90,   0 Jan  1  1970 mtd0
+    665      0 crw-rw----    1 root     root       90,   1 Jan  1  1970 mtd0ro
+    669      0 crw-rw----    1 root     root       90,   2 Jan  1  1970 mtd1
+    670      0 crw-rw----    1 root     root       90,   3 Jan  1  1970 mtd1ro
+    674      0 crw-rw----    1 root     root       90,   4 Jan  1  1970 mtd2
+    675      0 crw-rw----    1 root     root       90,   5 Jan  1  1970 mtd2ro
+    679      0 crw-rw----    1 root     root       90,   6 Jan  1  1970 mtd3
+    680      0 crw-rw----    1 root     root       90,   7 Jan  1  1970 mtd3ro
+    684      0 crw-rw----    1 root     root       90,   8 Jan  1  1970 mtd4
+    685      0 crw-rw----    1 root     root       90,   9 Jan  1  1970 mtd4ro
+   1600      0 crw-rw----    1 root     root       90,  10 Jan  1  1970 mtd5
+   1601      0 crw-rw----    1 root     root       90,  11 Jan  1  1970 mtd5ro
+   1605      0 crw-rw----    1 root     root       90,  12 Jan  1  1970 mtd6
+   1606      0 crw-rw----    1 root     root       90,  13 Jan  1  1970 mtd6ro
+   1610      0 crw-rw----    1 root     root       90,  14 Jan  1  1970 mtd7
+   1611      0 crw-rw----    1 root     root       90,  15 Jan  1  1970 mtd7ro
+   1615      0 crw-rw----    1 root     root       90,  16 Jan  1  1970 mtd8
+   1616      0 crw-rw----    1 root     root       90,  17 Jan  1  1970 mtd8ro
+    668      0 brw-rw----    1 root     root       31,   0 Jan  1  1970 mtdblock0
+    673      0 brw-rw----    1 root     root       31,   1 Jan  1  1970 mtdblock1
+    678      0 brw-rw----    1 root     root       31,   2 Jan  1  1970 mtdblock2
+    683      0 brw-rw----    1 root     root       31,   3 Jan  1  1970 mtdblock3
+    688      0 brw-rw----    1 root     root       31,   4 Jan  1  1970 mtdblock4
+   1604      0 brw-rw----    1 root     root       31,   5 Jan  1  1970 mtdblock5
+   1609      0 brw-rw----    1 root     root       31,   6 Jan  1  1970 mtdblock6
+   1614      0 brw-rw----    1 root     root       31,   7 Jan  1  1970 mtdblock7
+   1619      0 brw-rw----    1 root     root       31,   8 Jan  1  1970 mtdblock8
+    740      0 crw-rw----    1 root     root       10,  62 Jan  1  1970 network_latency
+    742      0 crw-rw----    1 root     root       10,  61 Jan  1  1970 network_throughput
+     42      0 crw-rw-rw-    1 root     root        1,   3 Jan  1  1970 null
+    691      0 crw-rw----    1 root     root       10,   1 Jan  1  1970 psaux
+    654      0 crw-rw-rw-    1 root     tty         5,   2 Jan  1  1970 ptmx
+      1      0 drwxr-xr-x    2 root     root           0 Jan  1  1970 pts
+    318      0 crw-rw----    1 root     tty         2, 176 Jan  1  1970 ptya0
+[...]
+    317      0 crw-rw----    1 root     tty         2, 175 Jan  1  1970 ptyzf
+     45      0 cr--r--r--    1 root     root        1,   8 Jan  1  1970 random
+   1630      0 drwxrwxrwx    2 root     root          40 Jan  1  1970 shm
+     48      0 crw-rw-rw-    1 root     tty         5,   0 Jan  1  1970 tty
+     50      0 crw-rw----    1 root     tty         4,   0 Jan  1  1970 tty0
+     55      0 crw-rw----    1 root     tty         4,   1 Jan  1  1970 tty1
+[...]
+   1673      0 crw-------    1 root     root      246,   0 Jun 14 19:36 ttyGS0
+    659      0 crw-rw----    1 root     root        4,  64 Jan  1  1970 ttyS0
+    660      0 crw-rw----    1 root     root        4,  65 Jan  1  1970 ttyS1
+    661      0 crw-rw----    1 root     root        4,  66 Jan  1  1970 ttyS2
+    658      0 crw-rw----    1 root     root        4,  67 Jan  1  1970 ttyS3
+    574      0 crw-rw----    1 root     root        3, 176 Jan  1  1970 ttya0
+[...]
+    573      0 crw-rw----    1 root     root        3, 175 Jan  1  1970 ttyzf
+    778      0 crw-rw----    1 root     root      248,   0 Jan  1  1970 ubi0
+    779      0 crw-rw----    1 root     root      248,   1 Jan  1  1970 ubi0_0
+    780      0 crw-rw----    1 root     root      248,   2 Jan  1  1970 ubi0_1
+    781      0 crw-rw----    1 root     root      248,   3 Jan  1  1970 ubi0_2
+    782      0 crw-rw----    1 root     root      248,   4 Jan  1  1970 ubi0_3
+    774      0 crw-rw----    1 root     root       10,  59 Jan  1  1970 ubi_ctrl
+     46      0 cr--r--r--    1 root     root        1,   9 Jan  1  1970 urandom
+     51      0 crw-rw----    1 root     tty         7,   0 Jan  1  1970 vcs
+     53      0 crw-rw----    1 root     tty         7,   1 Jan  1  1970 vcs1
+     52      0 crw-rw----    1 root     tty         7, 128 Jan  1  1970 vcsa
+     54      0 crw-rw----    1 root     tty         7, 129 Jan  1  1970 vcsa1
+    731      0 crw-rw----    1 root     root       10, 130 Jan  1  1970 watchdog
+    732      0 crw-rw----    1 root     root      254,   0 Jan  1  1970 watchdog0
+     43      0 crw-rw-rw-    1 root     root        1,   5 Jan  1  1970 zero
+
+

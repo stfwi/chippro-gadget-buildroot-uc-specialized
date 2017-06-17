@@ -1,0 +1,27 @@
+#!/bin/sh
+# Starts web server if existing.
+
+case "$1" in
+  start)
+    if [ -f /usr/bin/civetweb ] && [ -f /etc/civetweb.conf ]; then
+      printf "Starting web server ... "
+      start-stop-daemon -S -q -m -b -p /var/run/civetweb.pid --exec /usr/bin/civetweb -- /etc/civetweb.conf
+      echo "done."
+    fi
+    ;;
+  stop)
+    printf "Stopping web server ..."
+    start-stop-daemon -K -q -p /var/run/civetweb.pid
+    echo "done."
+    ;;
+  restart)
+    $0 stop
+    sleep 1
+    $0 start
+    ;;
+  *)
+    echo "usage: $0 {start|stop|restart}"
+    ;;
+esac
+
+exit $?

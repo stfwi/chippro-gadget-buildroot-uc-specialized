@@ -1,0 +1,2 @@
+config BR2_PACKAGE_CUSTOM_PLACEHOLDER
+	bool "custom-packages (placeholder)"

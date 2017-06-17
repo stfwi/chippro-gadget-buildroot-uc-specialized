@@ -1,0 +1,27 @@
+baudrate=115200
+boot_fel=if test -n \${fel_booted} && test -n \${scriptaddr}; then echo '(FEL boot)'; source \${scriptaddr}; fi
+boot_kernel=bootz $kernel_addr_r - $fdt_addr_r
+boot_ubi=run read_kernel; run read_fdt; run boot_kernel
+bootargs=root=ubi0:rootfs rootfstype=ubifs rw ubi.mtd=4 lpj=5009408 ubi.fm_autoconvert=1 quiet
+preboot=run boot_fel
+bootcmd=run boot_ubi
+bootdelay=0
+bootm_size=0xa000000
+console=ttyS0,115200
+env_in_ubi=1
+fdt_addr_r=0x43000000
+kernel_addr_r=0x42000000
+mtddevname=spl
+mtddevnum=0
+mtdids=nand0=sunxi-nand.0
+mtdparts=mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),-(UBI)
+partition=nand0,0
+pxefile_addr_r=0x43200000
+ramdisk_addr_r=0x43300000
+read_fdt=ubi read $fdt_addr_r fdt
+read_kernel=ubi read $kernel_addr_r kernel
+scriptaddr=0x43100000
+stderr=serial
+stdin=serial,usbkbd
+stdout=serial
+silent=1

@@ -1,0 +1,2 @@
+#!/bin/bash
+./buildroot/gadget//chippro/scripts/flash.sh buildroot/output --bootloader

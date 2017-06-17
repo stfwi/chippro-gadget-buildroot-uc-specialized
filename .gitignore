@@ -1,0 +1,11 @@
+.local-env
+nbproject
+.project
+.metadata
+*.tmp
+~*
+*~
+.DS_Store
+*.o
+/custom
+/buildroot/output/images/

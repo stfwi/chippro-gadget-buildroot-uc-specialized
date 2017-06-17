@@ -1,0 +1,59 @@
+#
+# Installation of the build images on the target CHIPpro.
+#
+~/chippro$ date
+Wed 14 Jun 20:50:40 CEST 2017
+
+~/chippro$ which sunxi-fel
+/usr/local/bin/sunxi-fel
+~/chippro$ sunxi-fel --help
+sunxi-fel v1.4.2-45-g7128c73
+[...]
+
+~/chippro$ make install
+Loading config: buildroot/output/../gadget//chippro/configs/nand/Toshiba-SLC-4G-TC58NVG2S0H.config
+SPL: spl-40000-1000-100.bin
+erasing 'spl'...
+OKAY [  0.029s]
+finished. total time: 0.029s
+erasing 'spl-backup'...
+OKAY [  0.030s]
+finished. total time: 0.030s
+target reported max download size of 33554432 bytes
+sending 'spl' (272 KB)...
+OKAY [  0.021s]
+writing 'spl'...
+OKAY [  0.058s]
+finished. total time: 0.079s
+target reported max download size of 33554432 bytes
+sending 'spl-backup' (272 KB)...
+OKAY [  0.021s]
+writing 'spl-backup'...
+OKAY [  0.059s]
+finished. total time: 0.080s
+erasing 'uboot'...
+OKAY [  0.030s]
+finished. total time: 0.030s
+target reported max download size of 33554432 bytes
+sending 'uboot' (768 KB)...
+OKAY [  0.052s]
+writing 'uboot'...
+OKAY [  0.245s]
+finished. total time: 0.298s
+erasing 'UBI'...
+OKAY [  2.916s]
+finished. total time: 2.916s
+target reported max download size of 33554432 bytes
+sending sparse 'UBI' (32512 KB)...
+OKAY [  2.235s]
+writing 'UBI'...
+OKAY [  7.646s]
+sending sparse 'UBI' (5376 KB)...
+OKAY [  0.373s]
+writing 'UBI'...
+OKAY [  1.532s]
+finished. total time: 11.785s
+resuming boot...
+OKAY [  0.000s]
+finished. total time: 0.000s
+

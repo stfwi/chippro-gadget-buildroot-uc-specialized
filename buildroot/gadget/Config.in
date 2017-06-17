@@ -1,0 +1,8 @@
+source "$BR2_EXTERNAL_GADGETOS_PATH/package/dtc-overlay/Config.in.host"
+source "$BR2_EXTERNAL_GADGETOS_PATH/package/target-dtc-overlay/Config.in"
+source "$BR2_EXTERNAL_GADGETOS_PATH/package/rtl8723bs_mp_driver/Config.in"
+source "$BR2_EXTERNAL_GADGETOS_PATH/package/rtl8723ds_mp_driver/Config.in"
+source "$BR2_EXTERNAL_GADGETOS_PATH/package/rtl8723ds_bt/Config.in"
+source "$BR2_EXTERNAL_GADGETOS_PATH/package/chip-mtd-utils/Config.in"
+source "$BR2_EXTERNAL_GADGETOS_PATH/package/chip-mtd-utils/Config.in.host"
+source "$BR2_EXTERNAL_GADGETOS_PATH/custom/package/Config.in"

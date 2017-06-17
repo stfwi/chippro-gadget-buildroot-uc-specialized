@@ -1,0 +1,26 @@
+#!/bin/sh
+# Enables wifi, currently only connmanctl.
+
+case "$1" in
+  start|restart|reload)
+    if [ $(which connmanctl) != "" ]; then
+      printf "Enable wifi ..."
+      connmanctl enable wifi
+      if [ $? -eq 0 ]; then
+        echo "OK"
+        exit 0
+      else
+        echo "FAILED"
+        exit 1
+      fi
+    fi
+    ;;
+  stop)
+    exit 0
+    ;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?

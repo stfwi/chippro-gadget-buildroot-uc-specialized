@@ -1,0 +1,71 @@
+#!/bin/sh
+MAIN_DIR="$(pwd)/buildroot"
+IMAGE_DIR="$(pwd)/buildroot/output/images"
+ENVIRONMENT_FILE=".local-env"
+CUSTOM_DIR="$(pwd)/custom"
+[ -d $CUSTOM_DIR ] && CUSTOM_DIR_INCLUDE="--volume=${CUSTOM_DIR}:/opt/gadget-os-proto/gadget/custom" || CUSTOM_DIR_INCLUDE=""
+
+run_docker() {
+  task=${@}
+  [ -z "${task}" ] && return 1
+  [ -n "${TERM}" ] && INTERACTIVE="-it" || INTERACTIVE=""
+  [ -f "${ENVIRONMENT_FILE}" ] && LOCAL_ENV="--env-file ${ENVIRONMENT_FILE}" || LOCAL_ENV=""
+  docker run --rm --env BR2_DL_DIR=/opt/dlcache/ \
+    --volume=uchippro-build-dlcache:/opt/dlcache/ \
+    --volume=uchippro-build-output:/opt/output \
+    --volume=${IMAGE_DIR}:/opt/output/images \
+    --volume=${MAIN_DIR}:/opt/gadget-os-proto \
+    $CUSTOM_DIR_INCLUDE \
+    --name=uchippro-build-task \
+    -w="/opt/gadget-os-proto" ${LOCAL_ENV} ${INTERACTIVE} \
+    uchippro-build-container ${task}
+}
+
+if [ ! -d "${MAIN_DIR}/gadget" ]; then
+	echo "You seem to be running this from the wrong directory."
+	echo "Please run from the gadget-os git root."
+	exit 1
+fi
+
+[ ! -d "${IMAGE_DIR}" ] && mkdir -p "${IMAGE_DIR}"
+
+if [ "$1" = "--init" ] && [ "$#" -eq 1 ]; then
+  if [ "$(docker inspect uchippro-build-container 2>&1 | grep 'permission denied')" ]; then
+    if [ "$(whoami)" != "root" ]; then
+      echo "You don't have permissions to talk to the docker daemon."
+      echo "Use sudo or better add yourself to the group 'docker' (linux)."
+      echo ""
+      echo " -> Command to add: sudo usermod -a -G docker $(whoami)"
+      echo " -> After that logout and login again, it does not work directly!"
+      echo ""
+    else
+      echo "(strange) Check docker settings,  you are root but docker says 'permission denied'."
+    fi
+    exit 1
+  fi
+  echo "Initialising docker containers ..."
+  docker inspect uchippro-build-container >/dev/null 2>&1 || docker build -f scripts/Dockerfile -t uchippro-build-container "$(pwd)"
+  docker volume inspect uchippro-build-ccache >/dev/null 2>&1 || docker volume create --name uchippro-build-ccache
+  docker volume inspect uchippro-build-output >/dev/null 2>&1 || docker volume create --name uchippro-build-output
+  docker volume inspect uchippro-build-dlcache >/dev/null 2>&1 || docker volume create --name uchippro-build-dlcache
+  exit 0
+elif [ "$1" = "--clear" ] && [ "$#" -eq 1 ]; then
+  docker volume rm -f uchippro-build-ccache
+  docker volume rm -f uchippro-build-output
+  docker volume rm -f uchippro-build-dlcache
+  docker rmi -f uchippro-build-container
+  docker volume prune -f
+  docker system prune -f -a
+  exit 0
+elif [ -n "${1}" ]; then
+  run_docker "${@}"
+  EC=$?
+  # Fix image file permissions, so that these are not root:root in the
+  # host system.
+  run_docker chown -R 1000:1000 /opt/output/images
+  exit $EC
+else
+  # run_docker "make"
+  echo "Nothing to do"
+  exit 0
+fi

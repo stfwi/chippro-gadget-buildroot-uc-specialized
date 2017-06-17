@@ -1,0 +1,10 @@
+config BR2_PACKAGE_RTL8723DS_BT
+	bool "rtl8723ds_bt"
+	help
+	  Firmware and config for the rtl8723ds_bt SDIO Bluetooth module.
+
+	  Make sure your target kernel has the following config
+	  options enabled:
+
+	    * CONFIG_BT: bluetooth support
+		* CONFIG_BT_HCIUART: bluetooth HCI UART serial driver

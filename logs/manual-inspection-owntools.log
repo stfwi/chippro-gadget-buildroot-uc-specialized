@@ -1,0 +1,251 @@
+#
+# Check of the chippro script
+#
+# Note: CHIPpro hostname: cos, user: cos, (guess the password).
+#
+root@cos:~# chippro
+Unknown command, say: chippro <command> [<arguments>]
+
+ chippro info
+   Shows the pins/pin-config of the chip.
+
+ enter-flashing-mode --force
+   - Sets USB FEL flashing mode and reboots.
+
+ pwm0, pwm1
+   Enables, disables or sets the value of PWM channels:
+   - pwm? enable   : Enables the channel, set value to 0.
+   - pwm? disable  : Set value to 0, disables the channel.
+   - pwm? value <0 to 100>  : Set duty cycle to <0 to 100>%.
+
+ device-tree-stati
+   Shows the (disabled/okay) stati of the devices registered
+   in the device-tree.
+
+ make-device-tree-overlay
+   Generates a device tree overlay object (*.dtbo) from a source
+   file (*.dts) using the device tree compiler (dtc). In the
+   kernel sources some preprocessor defines are available, which
+   are here replaced by their numbers directly (using sed).
+
+ gpio-of
+   Prints the GPIO sysfs number of a given GR8 port or CHIP pin.
+   - chippro gpio-of PE1    --> 129
+
+
+#### INFO
+
+root@cos:~# chippro info
+
+                 ╭─────────────────────────────────────────────>┃53┣ USB0 GND
+                 │                     ╭───────────────────────╮┃52┣ USB0 D-
+               ┏━┻━┻━┻━┻┳━━━━━━━┳┻━┻━┻━┻━┓                     │┃51┣ USB0 D+
+           GND ┫01      ┃|      ┃      45┣ GND                 │┃50┣ USB0 VCC
+       VCC-3V3 ┫02      ┃|______┃ PG03 44┣ UART1-TX/EINT3      │┃49┣ USB1 GND
+        IPSOUT ┫03      ┗━━━━━━━┛ PG04 43┣ UART1-RX/EINT4      │┃48┣ USB1 D-
+        CHG-IN ┫04                PC13 42┣ LRADC               │┃47┣ USB1 D+
+         PWRON ┫05                PE00 41┣ SPI2-CS0/CSIPCLK    ╰┃46┣ USB1 GND
+           GND ┫06                PE01 40┣ SPI2-CLK/CSIMCLK
+       BATTEMP ┫07                PE02 39┣ SPI2-MOSI/CSIHSYNC  ╭┃29┣ VMIC
+           BAT ┫08                PE03 38┣ SPI2-MISO/CSIVSYNC  │┃28┣ MICIN2
+ SPDIF-DO/PWM0 ┫09 PB02           PE04 37┣ SDC2-D0/CSID0       │┃27┣ MICIN1
+   EINT13/PWM1 ┫10 PG13           PE05 36┣ SDC2-D1/CSID1       │┃26┣ AGND
+      TWI1-SCK ┫11 PB15           PE06 35┣ SDC2-D2/CSID2       │┃25┣ PB09 I2S-DI
+      TWI1-SDA ┫12 PB16           PE07 34┣ SDC2-D3/CSID3       │┃24┣ PB08 I2S-DO
+      UART2-TX ┫13 PD02           PE08 33┣ SDC2-CMD/CSID4      │┃23┣ PB07 I2S-LCLK
+      UART2-RX ┫14 PD03           PE09 32┣ SDC2-CLK/CSID5      │┃22┣ PB06 I2S-BCLK
+     UART2-CTS ┫15 PD04           PE10 31┣ UART1-TX/CSID6      │┃21┣ PB05 I2S-MCLK
+     UART2-RTS ┫16 PD05           PE11 30┣ UART1-RX/CSID7      │┃20┣ HPR
+               ┗┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳┛                     │┃19┣ HPCOM
+                │                       ╰──────────────────────╯┃18┣ HPL
+                ╰──────────────────────────────────────────────>┃17┣ GND
+
+
+
+
+### GPIO number of port description
+
+root@cos:~# chippro gpio-of pe3
+131
+
+# Test GPIO in sysfs:
+root@cos:~# echo 131 >/sys/class/gpio/export
+root@cos:~# ll /sys/class/gpio/gpio131/
+total 0
+  17749      0 drwxr-xr-x    3 root     root           0 Jun 15 20:11 .
+   5525      0 drwxr-xr-x    4 root     root           0 Jan  1  1970 ..
+  17756      0 -rw-r--r--    1 root     root        4.0K Jun 15 20:12 active_low
+  17752      0 lrwxrwxrwx    1 root     root           0 Jun 15 20:12 device -> ../../../1c20800.pinctrl
+  17754      0 -rw-r--r--    1 root     root        4.0K Jun 15 20:12 direction
+  17757      0 drwxr-xr-x    2 root     root           0 Jun 15 20:12 power
+  17751      0 lrwxrwxrwx    1 root     root           0 Jun 15 20:12 subsystem -> ../../../../../../class/gpio
+  17750      0 -rw-r--r--    1 root     root        4.0K Jun 15 20:11 uevent
+  17755      0 -rw-r--r--    1 root     root        4.0K Jun 15 20:12 value
+root@cos:~# cat /sys/class/gpio/gpio131/value
+1
+root@cos:~# cat /sys/class/gpio/gpio131/direction
+in
+root@cos:~# echo 131 >/sys/class/gpio/unexport
+
+
+### PWM enable/disable/value setting
+
+root@cos:~# chippro pwm0 enable
+root@cos:~# ls /sys/class/pwm/pwmchip0/
+device/     export      npwm        power/      pwm0/       subsystem/  uevent      unexport
+root@cos:~# ls /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+/sys/class/pwm/pwmchip0/pwm0/duty_cycle
+root@cos:~# cat /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+0
+root@cos:~# chippro pwm0 value 100
+root@cos:~# cat /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+1000
+root@cos:~# cat /sys/class/pwm/pwmchip0/pwm0/period
+1000
+root@cos:~# chippro pwm0 value 50
+root@cos:~# cat /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+500
+root@cos:~# chippro pwm1 enable
+root@cos:~# cat /sys/class/pwm/pwmchip0/pwm1/duty_cycle
+0
+root@cos:~# cat /sys/class/pwm/pwmchip0/pwm1/period
+1000
+root@cos:~# chippro pwm0 disable
+root@cos:~# chippro pwm1 disable
+root@cos:~# cat /sys/class/pwm/pwmchip0/pwm1/period
+cat: can't open '/sys/class/pwm/pwmchip0/pwm1/period': No such file or directory
+root@cos:~# cat /sys/class/pwm/pwmchip0/pwm0/period
+cat: can't open '/sys/class/pwm/pwmchip0/pwm0/period': No such file or directory
+
+
+### Device tree stati from sysfs
+
+root@cos:~# chippro device-tree-stati
+
+disabled display-backend@01e60000
+disabled display-frontend@01e00000
+disabled i2c@01c2b400
+disabled ir@01c21800
+disabled lcd-controller@01c0c000
+disabled mmc@01c10000
+disabled mmc@01c11000
+disabled spdif@01c21000
+disabled spi@01c05000
+disabled spi@01c06000
+disabled spi@01c17000
+disabled tv-encoder@01c0a000
+okay     codec@01c22c00
+okay     i2c@01c2ac00
+okay     i2c@01c2ac00/pmic@34/usb_power_supply
+okay     i2c@01c2b000
+okay     i2s@01c22400
+okay     lradc@01c22800
+okay     mmc@01c0f000
+okay     nand@01c03000
+okay     phy@01c13400
+okay     pwm@01c20e00
+okay     serial@01c28400
+okay     serial@01c28800
+okay     serial@01c28c00
+okay     sram-controller@01c00000/sram@00010000/sram-section@0000
+okay     usb@01c13000
+okay     usb@01c14000
+okay     usb@01c14400
+
+
+#
+# Example of target device tree compiler with overlay,
+# "chippro make-device-tree-overlay" invokes the DTC after
+# replacing C macros with their values, so that overlays
+# can be created on the target:
+#
+# This is used inline in a script reading a Dallas OneWire
+# bus temperature sensor.
+#
+#
+root@cos:~# cat ds18b20-on-w1gpio-pe4-pin37
+#!/bin/sh
+OVERLAYDIR=/sys/kernel/config/device-tree/overlays/w1test
+
+die() {
+  echo "[fail] $@"; >&2
+  rm -rf "$OVERLAYDIR" >/dev/null
+  exit 1
+}
+
+
+if [ ! -d "$OVERLAYDIR" ]; then
+#----------------------------------------------------------
+
+# Mount configfs if not already mounted
+if [ "$(mount | grep configfs | grep -v grep | wc -l)" -eq "0" ]; then
+  mount -t configfs none /sys/kernel/config || die "Failed to mount configfs."
+fi
+
+# Create config overlay subdir
+mkdir -p $OVERLAYDIR || die "Failed to create overlay subdirectory $OVERLAYDIR."
+
+# Compile and register the overlay in the kernel.
+cat <<'EOF' | chippro make-device-tree-overlay - >$OVERLAYDIR/dtbo || die "Failed to write dto."
+/* w1-gpio-pe4-pin37 dtbo */
+/dts-v1/;
+/plugin/;
+
+/ {
+  compatible = "nextthing,crumb", "nextthing,gr8";
+
+  fragment@0 {
+    target = <&pio>;
+    __overlay__ {
+        w1_gpio_pin: w1_gpio_pin@0 {
+        allwinner,pins = "PE4";
+        allwinner,function = "gpio_in";
+        allwinner,drive = <SUN4I_PINCTRL_10_MA>;
+        allwinner,pull = <SUN4I_PINCTRL_PULL_UP>;
+      };
+    };
+  };
+
+  fragment@1 {
+    target-path = "/";
+    __overlay__ {
+      onewire_device {
+        compatible = "w1-gpio";
+        gpios = <&pio 4 4 GPIO_ACTIVE_HIGH>; /* PE4 */
+        pinctrl-names = "default";
+        pinctrl-0 = <&w1_gpio_pin>;
+        status = "okay";
+      };
+    };
+  };
+};
+EOF
+sleep 1
+#----------------------------------------------------------
+fi
+
+# readtemp.sh, DS18B20 temperature sensor at w1-gpio
+RFILE=/sys/bus/w1/devices/28-041693442bff/w1_slave
+echo $(cat $RFILE) | grep 'YES' | sed -e 's/ //g' | awk -F= '{print $3/1000}'
+
+root@cos:~# ls /sys/kernel/config/device-tree/overlays/
+root@cos:~# ./ds18b20-on-w1gpio-pe4-pin37
+23.125
+root@cos:~# ls /sys/kernel/config/device-tree/overlays/
+w1test
+root@cos:~# ls /sys/kernel/config/device-tree/overlays/w1test/
+dtbo    path    status
+root@cos:~# ./ds18b20-on-w1gpio-pe4-pin37
+23.187
+root@cos:~# ./ds18b20-on-w1gpio-pe4-pin37
+23.187
+root@cos:~# ./ds18b20-on-w1gpio-pe4-pin37
+23.187
+root@cos:~# ./ds18b20-on-w1gpio-pe4-pin37
+23.187
+root@cos:~# ./ds18b20-on-w1gpio-pe4-pin37
+23.187
+root@cos:~#
+root@cos:~# exit
+cos@cos:~$ exit
+Connection to fe80::####:####:####:####%wlp2s0 closed.

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+if [ ! -f /dev/ttyGS0 ]; then
+  modprobe libcomposite
+  mkdir /sys/kernel/config/usb_gadget/g1
+  echo "0x1d6b" > /sys/kernel/config/usb_gadget/g1/idVendor
+  echo "0x0104" > /sys/kernel/config/usb_gadget/g1/idProduct
+  mkdir /sys/kernel/config/usb_gadget/g1/strings/0x409
+  echo "0123456789" > /sys/kernel/config/usb_gadget/g1/strings/0x409/serialnumber
+  echo "NTC" > /sys/kernel/config/usb_gadget/g1/strings/0x409/manufacturer
+  echo "USB serial term" > /sys/kernel/config/usb_gadget/g1/strings/0x409/product
+  mkdir /sys/kernel/config/usb_gadget/g1/functions/acm.usb1
+  mkdir /sys/kernel/config/usb_gadget/g1/configs/c.1
+  mkdir /sys/kernel/config/usb_gadget/g1/configs/c.1/strings/0x409
+  echo "CDC ACM" > /sys/kernel/config/usb_gadget/g1/configs/c.1/strings/0x409/configuration
+  ln -s /sys/kernel/config/usb_gadget/g1/functions/acm.usb1 /sys/kernel/config/usb_gadget/g1/configs/c.1
+  echo $(ls -1 /sys/class/udc/ | grep '^musb-hdrc') > /sys/kernel/config/usb_gadget/g1/UDC
+  su root -c "getty -L 115200 /dev/ttyGS0"
+fi
+
+while /bin/true; do
+  getty -L 115200 /dev/ttyGS0 || exit 1
+  sleep 3
+done

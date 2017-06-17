@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# Tied to PB4 on the R8
+# PB = Bank B = Bank 1
+# IO 4
+# 32 IO per Bank
+# 32 * 1 + 4 = 36
+BT_RST_N=36
+
+
+failed () {
+        status=$2
+
+        echo ${1}
+        echo ${BT_RST_N} > /sys/class/gpio/unexport
+        exit ${status}
+}
+
+# Make sure this is a Crumb
+[ "$(cat /proc/device-tree/model)" = "NextThing Crumb" -o \
+  "$(cat /proc/device-tree/model)" = "NextThing C.H.I.P." ] || \
+        failed "This is not a Crumb ... exiting" $?
+
+# Make the BT_RST_N GPIO available to userspace
+if [ ! -e /sys/class/gpio/gpio${BT_RST_N} ]; then
+        echo ${BT_RST_N} > /sys/class/gpio/export || \
+                failed "Failed to export BT_RST_N" $?
+fi
+
+# Set BT_RST_N to be an output
+echo out > /sys/class/gpio/gpio${BT_RST_N}/direction || \
+        failed "Failed to set BT_RST_N direction = out" $?
+
+# Toggle BT_RST_N to reset Bluetooth
+{
+        echo 1 > /sys/class/gpio/gpio${BT_RST_N}/value;
+        sleep 0.1;
+        echo 0 > /sys/class/gpio/gpio${BT_RST_N}/value;
+        sleep 0.1;
+        echo 1 > /sys/class/gpio/gpio${BT_RST_N}/value;
+} || failed "Failed to toggle Bluetooth reset" $?
+
+# Cleanup BT_RST_N direction and unexport it
+echo in > /sys/class/gpio/gpio${BT_RST_N}/direction || \
+        failed "Failed to set BT_RST_N direction = in" $?
+
+echo ${BT_RST_N} > /sys/class/gpio/unexport || \
+        failed "Failed to unexport BT_RST_N" $?
+
+echo "Bluetooth reset successfully!"

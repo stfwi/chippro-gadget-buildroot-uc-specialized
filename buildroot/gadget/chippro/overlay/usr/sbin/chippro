@@ -1,0 +1,237 @@
+#!/bin/sh
+
+#
+# Auxiliary functions
+#
+die() {
+  echo "$@" >&2
+  exit 1
+}
+
+#
+# Print the layout with pin information
+#
+chippro_show_pinconfig() {
+cat <<EOF
+
+                 ╭─────────────────────────────────────────────>┃53┣ USB0 GND
+                 │                     ╭───────────────────────╮┃52┣ USB0 D-
+               ┏━┻━┻━┻━┻┳━━━━━━━┳┻━┻━┻━┻━┓                     │┃51┣ USB0 D+
+           GND ┫01      ┃|      ┃      45┣ GND                 │┃50┣ USB0 VCC
+       VCC-3V3 ┫02      ┃|______┃ PG03 44┣ UART1-TX/EINT3      │┃49┣ USB1 GND
+        IPSOUT ┫03      ┗━━━━━━━┛ PG04 43┣ UART1-RX/EINT4      │┃48┣ USB1 D-
+        CHG-IN ┫04                PC13 42┣ LRADC               │┃47┣ USB1 D+
+         PWRON ┫05                PE00 41┣ SPI2-CS0/CSIPCLK    ╰┃46┣ USB1 GND
+           GND ┫06                PE01 40┣ SPI2-CLK/CSIMCLK
+       BATTEMP ┫07                PE02 39┣ SPI2-MOSI/CSIHSYNC  ╭┃29┣ VMIC
+           BAT ┫08                PE03 38┣ SPI2-MISO/CSIVSYNC  │┃28┣ MICIN2
+ SPDIF-DO/PWM0 ┫09 PB02           PE04 37┣ SDC2-D0/CSID0       │┃27┣ MICIN1
+   EINT13/PWM1 ┫10 PG13           PE05 36┣ SDC2-D1/CSID1       │┃26┣ AGND
+      TWI1-SCK ┫11 PB15           PE06 35┣ SDC2-D2/CSID2       │┃25┣ PB09 I2S-DI
+      TWI1-SDA ┫12 PB16           PE07 34┣ SDC2-D3/CSID3       │┃24┣ PB08 I2S-DO
+      UART2-TX ┫13 PD02           PE08 33┣ SDC2-CMD/CSID4      │┃23┣ PB07 I2S-LCLK
+      UART2-RX ┫14 PD03           PE09 32┣ SDC2-CLK/CSID5      │┃22┣ PB06 I2S-BCLK
+     UART2-CTS ┫15 PD04           PE10 31┣ UART1-TX/CSID6      │┃21┣ PB05 I2S-MCLK
+     UART2-RTS ┫16 PD05           PE11 30┣ UART1-RX/CSID7      │┃20┣ HPR
+               ┗┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳┛                     │┃19┣ HPCOM
+                │                       ╰──────────────────────╯┃18┣ HPL
+                ╰──────────────────────────────────────────────>┃17┣ GND
+
+EOF
+}
+
+#
+# Enable/Disable PWM channels or set the
+# duty cycle value (in percent).
+#
+chippro_pwm_config() {
+  local PWM=$1
+  local CMD=$2
+  case "$CMD" in
+    enable)
+      if [ ! -d /sys/class/pwm/pwmchip0/pwm$PWM ]; then
+        echo $PWM   > /sys/class/pwm/pwmchip0/export
+        echo normal > /sys/class/pwm/pwmchip0/pwm$PWM/polarity
+        echo 1      > /sys/class/pwm/pwmchip0/pwm$PWM/enable
+        echo 1000   > /sys/class/pwm/pwmchip0/pwm$PWM/period
+        echo 0      > /sys/class/pwm/pwmchip0/pwm$PWM/duty_cycle
+      fi
+      ;;
+    disable)
+      if [ -d /sys/class/pwm/pwmchip0/pwm$PWM ]; then
+        echo 0      > /sys/class/pwm/pwmchip0/pwm$PWM/duty_cycle
+        echo 0      > /sys/class/pwm/pwmchip0/pwm$PWM/enable
+        echo $PWM   > /sys/class/pwm/pwmchip0/unexport
+      fi
+      ;;
+    value)
+      if [ -d /sys/class/pwm/pwmchip0/pwm$PWM ]; then
+        echo "$3" | /usr/bin/awk "{print \$1 * $(cat /sys/class/pwm/pwmchip0/pwm$PWM/period) / 100}" > /sys/class/pwm/pwmchip0/pwm$PWM/duty_cycle
+      else
+        echo "Channel not enabled." >&2
+        return 1
+      fi
+      ;;
+    *)
+      echo "Unknown command"
+      ;;
+  esac
+}
+
+#
+# Prints the gpio number in the sysfs by a given
+# pin or GR8 port.
+#
+chippro_get_gpio_of() {
+  local PIN=$(echo "$1" | tr '[a-z]' '[A-Z]')
+  case $PIN in
+    P[ABCDE][0-9]*)
+      if [ -n "$(echo "$PIN" | grep -e '^[P][A-E][0-1]\?[0-9]$')" ]; then
+        local PORT=$(echo "$PIN" | sed -e 's/[^A-E]//g')
+        local PORT_OFFSET=0
+        case $PORT in
+          A) PORT_OFFSET=0;;
+          B) PORT_OFFSET=32;;
+          C) PORT_OFFSET=64;;
+          D) PORT_OFFSET=96;;
+          E) PORT_OFFSET=128;;
+          *) echo "No such port" >&2; return 1
+        esac
+        local PORT_PIN=$(echo "$PIN" | sed -e 's/[^0-9]//g' -e 's/^0\+//g')
+        #echo "$PORT $PORT_PIN $PORT_OFFSET" >&2
+        echo $(($PORT_OFFSET + $PORT_PIN))
+      fi
+      ;;
+    *)
+      echo "No such port or pin." >&2
+      return 1
+      ;;
+  esac
+}
+
+#
+# Shows the stati (disabled or okay) of the device tree
+# registered devices.
+#
+chippro_show_dtree_device_stati() {
+  local DTREE=$(echo /sys/firmware/devicetree/base/soc@*)
+  local OUT=""
+  for F in $(find "$DTREE" -name status); do
+    FF=$(echo $F | sed -e 's/\/status$//' -e "s|^$DTREE/||")
+    OUT="$OUT$(printf "%-8s %s\n" "$(cat $F)" "$FF")\n"
+  done
+  echo -e "$OUT" | sort
+}
+
+#
+# Generate a device tree overlay object from a source file
+#
+mk_dtc_overlay() {
+  local show_precompiled=no
+  [ "$1" = "-v" ] && show_precompiled=yes && shift
+  [ "$1" = "" ] && die "Usage: $(basename $0) make-device-tree-overlay <input-file>"
+
+  cat "$1" \
+  | sed \
+    -e 's/GPIO_ACTIVE_HIGH/0/g' -e 's/GPIO_ACTIVE_LOW/1/g' \
+    -e 's/GPIO_PUSH_PULL/0/g' -e 's/GPIO_SINGLE_ENDED/2/g' \
+    -e 's/GPIO_OPEN_DRAIN/3/g' -e 's/GPIO_OPEN_SOURCE/2/g' \
+    -e 's/IRQ_TYPE_NONE/0/g' \
+    -e 's/IRQ_TYPE_EDGE_RISING/1/g' \
+    -e 's/IRQ_TYPE_EDGE_FALLING/2/g' \
+    -e 's/IRQ_TYPE_EDGE_BOTH/3/g' \
+    -e 's/IRQ_TYPE_LEVEL_HIGH/4/g' \
+    -e 's/IRQ_TYPE_LEVEL_LOW/8/g' \
+    -e 's/SUN4I_DMA_NORMAL/0/g' \
+    -e 's/SUN4I_DMA_DEDICATED/1/g' \
+    -e 's/SUN4I_PINCTRL_10_MA/0/g' \
+    -e 's/SUN4I_PINCTRL_20_MA/1/g' \
+    -e 's/SUN4I_PINCTRL_30_MA/2/g' \
+    -e 's/SUN4I_PINCTRL_40_MA/3/g' \
+    -e 's/SUN4I_PINCTRL_NO_PULL/0/g' \
+    -e 's/SUN4I_PINCTRL_PULL_UP/1/g' \
+    -e 's/SUN4I_PINCTRL_PULL_DOWN/2/g' \
+    >/tmp/mkdtc.tmp
+
+    if [ "$show_precompiled" = "yes" ]; then
+      cat /tmp/mkdtc.tmp >&2
+    fi
+
+    cat /tmp/mkdtc.tmp | dtc -I dts -O dtb -i - -@
+    EC=$?
+    rm -f /tmp/mkdtc.tmp
+    return $EC
+}
+
+#
+# Puts the device in FEL (USB) flashing mode.
+#
+chippro_enter_fel_flashing_mode() {
+  /usr/sbin/fw_setenv bootcmd 'fastboot 0; reset;'
+  /sbin/reboot
+}
+
+#########################################################################
+# main
+#########################################################################
+
+COMMAND=$1; shift
+case "$COMMAND" in
+  enter-flashing-mode)
+    if [ "$1" != "--force" ]; then
+      die "You must additionally say --force to indicate that you really like to enter USB (FEL) flashing mode."
+    else
+      chippro_enter_fel_flashing_mode
+    fi
+    ;;
+  pwm0)
+    chippro_pwm_config 0 $@
+    ;;
+  pwm1)
+    chippro_pwm_config 1 $@
+    ;;
+  info)
+    chippro_show_pinconfig $@
+    ;;
+  gpio-of)
+    chippro_get_gpio_of $@
+    ;;
+  device-tree-stati)
+    chippro_show_dtree_device_stati $@
+    ;;
+  make-device-tree-overlay)
+    mk_dtc_overlay $@
+    ;;
+  *)
+    echo "Unknown command, say: chippro <command> [<arguments>]" >&2
+    echo "" >&2
+    echo " chippro info" >&2
+    echo "   Shows the pins/pin-config of the chip." >&2
+    echo "" >&2
+    echo " enter-flashing-mode --force" >&2
+    echo "   - Sets USB FEL flashing mode and reboots." >&2
+    echo "" >&2
+    echo " pwm0, pwm1" >&2
+    echo "   Enables, disables or sets the value of PWM channels:" >&2
+    echo "   - pwm? enable   : Enables the channel, set value to 0." >&2
+    echo "   - pwm? disable  : Set value to 0, disables the channel." >&2
+    echo "   - pwm? value <0 to 100>  : Set duty cycle to <0 to 100>%." >&2
+    echo "" >&2
+    echo " device-tree-stati" >&2
+    echo "   Shows the (disabled/okay) stati of the devices registered" >&2
+    echo "   in the device-tree." >&2
+    echo "" >&2
+    echo " make-device-tree-overlay" >&2
+    echo '   Generates a device tree overlay object (*.dtbo) from a source' >&2
+    echo '   file (*.dts) using the device tree compiler (dtc). In the' >&2
+    echo '   kernel sources some preprocessor defines are available, which' >&2
+    echo '   are here replaced by their numbers directly (using sed).' >&2
+    echo "" >&2
+    echo " gpio-of" >&2
+    echo "   Prints the GPIO sysfs number of a given GR8 port or CHIP pin." >&2
+    echo "   - chippro gpio-of PE1    --> 129" >&2
+    echo "" >&2
+    ;;
+esac
+
+# EOF
