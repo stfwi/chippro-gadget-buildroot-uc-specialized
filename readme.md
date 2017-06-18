@@ -57,10 +57,11 @@ I had to strip down the original NTC sources, reconfigure, patch, add post build
       - `make linux-nconfig`: Kernel ncurses based menu config.
       - `make busybox-nconfig`: Busybox ncurses based menu config.
       - `make whatever`: Invoke make whatever in the Docker container.
-      - `make sh` or `make login-shell`: Bash in the Docket container.
+      - `make sh` or `make login-shell`: Bash in the Docker container.
 
   - Edited the dockerfile and the docker invocation script, so that the docker
-    containers/images have different names than the normal gadget-os.
+    containers/images have different names than the normal gadget-os (prevent
+    collisions).
 
   - Removed the CHIP configs and resources (only CHIPpro needed).
 
@@ -589,11 +590,17 @@ root@cos:~# chippro make-device-tree-overlay myhwconfig.dts > myhwconfig.dtbo
         - [ ] ADC - need also to check if the microphone inputs can be used
               as simple low-sample-rate ADCs.
 
-  - [ ] Make buildroot packages out of the tool, so that NTC can include
-        it into the normal gadget-os if they like (modularity).
+  - [ ] Make buildroot packages out of the tool, so that they can be included
+        into the normal gadget-os on demand / if interesting.
+
+  - [ ] Civetweb: Check ipv6 listening.
+
+  - [ ] /dev: The bloody legacy spam ptyxy/ttyxy are still there, some dependency
+        conditions re-enable automatically when building (I disabled this with
+        nconfig).
 
 
-## Contribute, credits etc
+## Contribute, credits, feedback channels
 
 Yes, send fixes, patches, pullreqs, comments remarks and annotations.
 
@@ -601,4 +608,8 @@ Yes, send fixes, patches, pullreqs, comments remarks and annotations.
 (ntx-linux, gadget-os, u-boot, etc). This repository is merely a specialised
 configuration and application of that. Therfore the license it the same, and
 I would be happy to see that some of the specialisations here are usable and
-helpful for the community.
+helpful for the community. This repository is intentionally not a github-fork of
+[gadget-buildroot](https://github.com/NextThingCo/gadget-buildroot) because I
+think there are too many features moved, changed, and removed, making it not
+really eligible for pull requests. Interesting for the NTC gadget-os might be
+some aspects of this project.

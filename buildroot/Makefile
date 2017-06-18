@@ -1,4 +1,4 @@
-.PHONY: all nconfig help config-help
+.PHONY: all nconfig help config-help busybox-nconfig
 TOP=$(CURDIR)
 OUTPUT_DIR=/opt/output
 BR_DIR?=/opt/buildroot
@@ -16,6 +16,6 @@ all:
 nconfig:
 	@make -C $(BR_DIR) O=$(OUTPUT_DIR) nconfig
 
-config-help:
-	$(foreach b, $(sort $(notdir $(wildcard $(BR2_EXTERNAL)/configs/*_defconfig))), \
-	  printf "  %-29s - Build for %s\\n" $(b) $(b:_defconfig=);)
+# Busybox has apparently no nconfig but menuconfig
+busybox-nconfig:
+	@make -C $(BR_DIR) O=$(OUTPUT_DIR) busybox-menuconfig
