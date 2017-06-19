@@ -66,7 +66,18 @@ chippro_pwm_config() {
       ;;
     value)
       if [ -d /sys/class/pwm/pwmchip0/pwm$PWM ]; then
-        echo "$3" | /usr/bin/awk "{print \$1 * $(cat /sys/class/pwm/pwmchip0/pwm$PWM/period) / 100}" > /sys/class/pwm/pwmchip0/pwm$PWM/duty_cycle
+		if [ ! -z "$3" ]; then
+		  local val=$(echo $3 | sed -e 's/^[0 ]\+//g')
+		  [ -z "$val" ] && val=0
+		  if [ "$(echo $val | grep '[^0-9]')" ] || [ "$val" -lt 0 ] || [ "$val" -gt 100 ]; then
+			echo "Invalid PWM duty cycle (must be 0 to 100)." >&2
+			return 1;
+		  else
+            echo "$val" | /usr/bin/awk "{print \$1 * $(cat /sys/class/pwm/pwmchip0/pwm$PWM/period) / 100}" > /sys/class/pwm/pwmchip0/pwm$PWM/duty_cycle
+		  fi
+		else
+          cat /sys/class/pwm/pwmchip0/pwm$PWM/duty_cycle | awk "{print \$1 * 100 / $(cat /sys/class/pwm/pwmchip0/pwm$PWM/period)}"
+        fi
       else
         echo "Channel not enabled." >&2
         return 1
@@ -83,6 +94,9 @@ chippro_pwm_config() {
 # pin or GR8 port.
 #
 chippro_get_gpio_of() {
+  local PINS=<<EOT
+
+EOT
   local PIN=$(echo "$1" | tr '[a-z]' '[A-Z]')
   case $PIN in
     P[ABCDE][0-9]*)
@@ -102,9 +116,94 @@ chippro_get_gpio_of() {
         echo $(($PORT_OFFSET + $PORT_PIN))
       fi
       ;;
+    PIN[0-9][0-9]?)
+
+      ;;
     *)
       echo "No such port or pin." >&2
       return 1
+      ;;
+  esac
+}
+
+#
+# Enable/Disable PWM channels or set the
+# duty cycle value (in percent).
+#
+chippro_gpio_config() {
+  local PIN=$1
+  local CMD=$2
+  local GPIO=$(chippro_get_gpio_of $PIN)
+  local SYSFSDIR=/sys/class/gpio/gpio$GPIO
+
+  if [ -z "$GPIO" ]; then
+	echo "No such GPIO: '$1'." >&2
+	return 1
+  fi
+
+  case "$CMD" in
+    enable)
+	  local DIR=$(echo "$3" | tr '[A-Z]' '[a-z]')
+	  case "$DIR" in
+		"in"|"input"|"i")
+		  DIR="in"
+		  ;;
+		"out"|"output"|"o")
+		  DIR="out"
+		  ;;
+		*)
+	      echo 'Direction must be "in" or "out", but given is "'"$DIR"'"' >&2
+	      return 1
+		  ;;
+	  esac
+
+	  [ ! -d $SYSFSDIR ] && echo $GPIO > /sys/class/gpio/export
+
+      if [ ! -d $SYSFSDIR ]; then
+	      echo "Failed to export GPIO $GPIO" >&2
+	      return 1
+	  else
+        echo $DIR > $SYSFSDIR/direction
+        [ "$DIR" = "out" ] && echo 0 > $SYSFSDIR/value
+      fi
+      # add active high/low
+      ;;
+    disable)
+      if [ -d $SYSFSDIR ]; then
+        [ "$(cat $SYSFSDIR/direction)" = "out" ] && echo 0 > $SYSFSDIR/value
+        echo $GPIO > /sys/class/gpio/unexport
+      fi
+      ;;
+    value)
+      if [ -d $SYSFSDIR ]; then
+        if [ -z "$3" ]; then
+          cat $SYSFSDIR/value
+        else
+          if [ "$(cat $SYSFSDIR/direction)" != "out" ]; then
+            echo "GPIO not configured as output ($PIN)." >&2
+            return 1
+          else
+            case "$3" in
+              0|off|false|lo|low)
+                echo 0 > $SYSFSDIR/value
+                ;;
+              1|on|true|hi|high)
+                echo 1 > $SYSFSDIR/value
+                ;;
+              *)
+                echo "Invalid boolean value for seting GPIO ($PIN)." >&2
+                return 1
+                ;;
+            esac
+          fi
+        fi
+      else
+        echo "GPIO not enabled ($PIN)." >&2
+        return 1
+      fi
+      ;;
+    *)
+      echo "Unknown command"
       ;;
   esac
 }
@@ -196,6 +295,9 @@ case "$COMMAND" in
   gpio-of)
     chippro_get_gpio_of $@
     ;;
+  gpio)
+    chippro_gpio_config $@
+    ;;
   device-tree-stati)
     chippro_show_dtree_device_stati $@
     ;;
@@ -230,6 +332,15 @@ case "$COMMAND" in
     echo " gpio-of" >&2
     echo "   Prints the GPIO sysfs number of a given GR8 port or CHIP pin." >&2
     echo "   - chippro gpio-of PE1    --> 129" >&2
+    echo "" >&2
+    echo " gpio <GPIONAME> [enable in|out] | [disable] | [value [1|0|on|off|true|false]] " >&2
+    echo "   Enables/disables a GPIO, sets or gets its value." >&2
+    echo "   - chippro gpio PE4 enable out" >&2
+    echo "   - chippro gpio PE4 value true" >&2
+    echo "   - chippro gpio PE4 value   ---> 1" >&2
+    echo "   - chippro gpio pE4 value off" >&2
+    echo "   - chippro gpio Pe4 value   ---> 0" >&2
+    echo "   - chippro gpio pe4 disable" >&2
     echo "" >&2
     ;;
 esac
