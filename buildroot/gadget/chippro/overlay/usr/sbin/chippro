@@ -223,6 +223,19 @@ chippro_show_dtree_device_stati() {
 }
 
 #
+# Shows the which ports are used with what.
+#
+chippro_show_used_pinctrl_ports() {
+  # nand0 explicitly excluded because not exported to board pinout.
+  cat /sys/kernel/debug/pinctrl/pinctrl-handles \
+    | grep 'type: MUX_GROUP' \
+    | grep -v 'nand0' \
+    | sed -e 's/^.*group://' -e 's/([0-9]\+)//g' -e 's/function://g' \
+          -e 's/[ ]\+/ /g' -e 's/^ \+//' -e 's/ \+$//'
+}
+
+
+#
 # Generate a device tree overlay object from a source file
 #
 mk_dtc_overlay() {
@@ -301,6 +314,9 @@ case "$COMMAND" in
   device-tree-stati)
     chippro_show_dtree_device_stati $@
     ;;
+  pinctrl-stati)
+    chippro_show_used_pinctrl_ports $@
+    ;;
   make-device-tree-overlay)
     mk_dtc_overlay $@
     ;;
@@ -313,26 +329,6 @@ case "$COMMAND" in
     echo " enter-flashing-mode --force" >&2
     echo "   - Sets USB FEL flashing mode and reboots." >&2
     echo "" >&2
-    echo " pwm0, pwm1" >&2
-    echo "   Enables, disables or sets the value of PWM channels:" >&2
-    echo "   - pwm? enable   : Enables the channel, set value to 0." >&2
-    echo "   - pwm? disable  : Set value to 0, disables the channel." >&2
-    echo "   - pwm? value <0 to 100>  : Set duty cycle to <0 to 100>%." >&2
-    echo "" >&2
-    echo " device-tree-stati" >&2
-    echo "   Shows the (disabled/okay) stati of the devices registered" >&2
-    echo "   in the device-tree." >&2
-    echo "" >&2
-    echo " make-device-tree-overlay" >&2
-    echo '   Generates a device tree overlay object (*.dtbo) from a source' >&2
-    echo '   file (*.dts) using the device tree compiler (dtc). In the' >&2
-    echo '   kernel sources some preprocessor defines are available, which' >&2
-    echo '   are here replaced by their numbers directly (using sed).' >&2
-    echo "" >&2
-    echo " gpio-of" >&2
-    echo "   Prints the GPIO sysfs number of a given GR8 port or CHIP pin." >&2
-    echo "   - chippro gpio-of PE1    --> 129" >&2
-    echo "" >&2
     echo " gpio <GPIONAME> [enable in|out] | [disable] | [value [1|0|on|off|true|false]] " >&2
     echo "   Enables/disables a GPIO, sets or gets its value." >&2
     echo "   - chippro gpio PE4 enable out" >&2
@@ -341,6 +337,30 @@ case "$COMMAND" in
     echo "   - chippro gpio pE4 value off" >&2
     echo "   - chippro gpio Pe4 value   ---> 0" >&2
     echo "   - chippro gpio pe4 disable" >&2
+    echo "" >&2
+    echo " pwm0, pwm1" >&2
+    echo "   Enables, disables or sets the value of PWM channels:" >&2
+    echo "   - pwm? enable   : Enables the channel, set value to 0." >&2
+    echo "   - pwm? disable  : Set value to 0, disables the channel." >&2
+    echo "   - pwm? value <0 to 100>  : Set duty cycle to <0 to 100>%." >&2
+    echo "" >&2
+    echo " gpio-of" >&2
+    echo "   Prints the GPIO sysfs number of a given GR8 port or CHIP pin." >&2
+    echo "   - chippro gpio-of PE1    --> 129" >&2
+    echo "" >&2
+    echo " device-tree-stati" >&2
+    echo "   Shows the (disabled/okay) stati of the devices registered" >&2
+    echo "   in the device-tree." >&2
+    echo "" >&2
+    echo " pinctrl-stati" >&2
+    echo "   Shows which port (e.g. 'PE1' serves which function (e.g. 'gpio_in'" >&2
+    echo "   or 'i2c0'." >&2
+    echo "" >&2
+    echo " make-device-tree-overlay" >&2
+    echo '   Generates a device tree overlay object (*.dtbo) from a source' >&2
+    echo '   file (*.dts) using the device tree compiler (dtc). In the' >&2
+    echo '   kernel sources some preprocessor defines are available, which' >&2
+    echo '   are here replaced by their numbers directly (using sed).' >&2
     echo "" >&2
     ;;
 esac
