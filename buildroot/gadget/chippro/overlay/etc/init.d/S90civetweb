@@ -1,5 +1,9 @@
 #!/bin/sh
-# Starts web server if existing.
+
+if [ "$(whoami)" != "root" ]; then
+  echo "Need to be root." >&2
+  exit 1
+fi
 
 case "$1" in
   start)

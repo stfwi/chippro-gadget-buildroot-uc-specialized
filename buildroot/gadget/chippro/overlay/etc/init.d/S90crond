@@ -1,0 +1,26 @@
+#!/bin/sh
+
+if [ "$(whoami)" != "root" ]; then
+  echo "Need to be root." >&2
+  exit 1
+fi
+
+case "$1" in
+  start|restart|reload)
+    [ -f /etc/crontab ] && [ ! -d /var/spool/cron/crontabs ] && exit 0
+    killall crond >/dev/null 2>&1
+    [ ! -d /var/spool/cron/crontabs ] && mkdir -p /var/spool/cron/crontabs
+    chmod 750 /var/spool/cron/crontabs
+    [ -f /etc/crontab ] && [ ! -f /var/spool/cron/crontabs/root ] && ln -s /etc/crontab /var/spool/cron/crontabs/root
+    /usr/sbin/crond
+    ;;
+  stop)
+    killall crond >/dev/null 2>&1
+    exit 0
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+esac
+
+exit $?
