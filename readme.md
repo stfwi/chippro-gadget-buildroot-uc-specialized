@@ -510,25 +510,38 @@ Unknown command, say: chippro <command> [<arguments>]
  enter-flashing-mode --force
    - Sets USB FEL flashing mode and reboots.
 
+ gpio <GPIONAME> [enable in|out] | [disable] | [value [1|0|on|off|true|false]]
+   Enables/disables a GPIO, sets or gets its value.
+   - chippro gpio PE4 enable out
+   - chippro gpio PE4 value true
+   - chippro gpio PE4 value   ---> 1
+   - chippro gpio pE4 value off
+   - chippro gpio Pe4 value   ---> 0
+   - chippro gpio pe4 disable
+
  pwm0, pwm1
    Enables, disables or sets the value of PWM channels:
    - pwm? enable   : Enables the channel, set value to 0.
    - pwm? disable  : Set value to 0, disables the channel.
    - pwm? value <0 to 100>  : Set duty cycle to <0 to 100>%.
 
+ gpio-of
+   Prints the GPIO sysfs number of a given GR8 port or CHIP pin.
+   - chippro gpio-of PE1    --> 129
+
  device-tree-stati
    Shows the (disabled/okay) stati of the devices registered
    in the device-tree.
+
+ pinctrl-stati
+   Shows which port (e.g. 'PE1' serves which function (e.g. 'gpio_in'
+   or 'i2c0'.
 
  make-device-tree-overlay
    Generates a device tree overlay object (*.dtbo) from a source
    file (*.dts) using the device tree compiler (dtc). In the
    kernel sources some preprocessor defines are available, which
    are here replaced by their numbers directly (using sed).
-
- gpio-of
-   Prints the GPIO sysfs number of a given GR8 port or CHIP pin.
-   - chippro gpio-of PE1    --> 129
 
 
 root@cos:~# chippro info
@@ -563,6 +576,17 @@ root@cos:~# chippro pwm1 enable
 # PWM1 -->50% duty cycle (average output voltage 3.3V * 50%)
 root@cos:~# chippro pwm0 value 50
 
+# Enable, use, and disable a GPIO (here LED on the dev board)
+root@cos:~# chippro gpio PE4 enable out
+root@cos:~# chippro gpio PE4 value true
+root@cos:~# chippro gpio PE4 value
+1
+root@cos:~# chippro gpio pE4 value off
+root@cos:~# chippro gpio Pe4 value
+0
+root@cos:~# chippro gpio pe4 disable
+root@cos:~#
+
 # Compile device tree overlay to dtbo file (or send it directly to configfs)
 root@cos:~# chippro make-device-tree-overlay myhwconfig.dts > myhwconfig.dtbo
 
@@ -583,17 +607,11 @@ root@cos:~# chippro make-device-tree-overlay myhwconfig.dts > myhwconfig.dtbo
 
   - [ ] `chippro` tool:
 
-        - [ ] Enable/disable/set GPIO channel not done yet. Mainly useful for
-              testing and boot time initialisation of ports and their initial
-              values.
-
         - [ ] ADC - need also to check if the microphone inputs can be used
               as simple low-sample-rate ADCs.
 
   - [ ] Make buildroot packages out of the tool, so that they can be included
         into the normal gadget-os on demand / if interesting.
-
-  - [ ] Civetweb: Check ipv6 listening.
 
   - [ ] /dev: The bloody legacy spam ptyxy/ttyxy are still there, some dependency
         conditions re-enable automatically when building (I disabled this with
