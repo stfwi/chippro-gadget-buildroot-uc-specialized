@@ -8,14 +8,17 @@ fi
 case "$1" in
   start)
     if [ -f /usr/bin/civetweb ] && [ -f /etc/civetweb.conf ]; then
-      printf "Starting web server ... "
+      printf "Starting civetweb server ... "
       start-stop-daemon -S -q -m -b -p /var/run/civetweb.pid --exec /usr/bin/civetweb -- /etc/civetweb.conf
-      echo "done."
+    elif [ -f /usr/sbin/httpd ] && [ -f /etc/httpd.conf ]; then
+      printf "Starting httpd ... "
+      /usr/sbin/httpd -u www-data:www-data -h /var/www -c /etc/httpd.conf
     fi
     ;;
   stop)
     printf "Stopping web server ..."
-    start-stop-daemon -K -q -p /var/run/civetweb.pid
+    start-stop-daemon -K -q -p /var/run/civetweb.pid &>/dev/null
+    killall httpd &>/dev/null
     echo "done."
     ;;
   restart)

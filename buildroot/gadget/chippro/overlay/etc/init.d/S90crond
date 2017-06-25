@@ -12,7 +12,7 @@ case "$1" in
     [ ! -d /var/spool/cron/crontabs ] && mkdir -p /var/spool/cron/crontabs
     chmod 750 /var/spool/cron/crontabs
     [ -f /etc/crontab ] && [ ! -f /var/spool/cron/crontabs/root ] && ln -s /etc/crontab /var/spool/cron/crontabs/root
-    /usr/sbin/crond
+    /usr/sbin/crond -l 10
     ;;
   stop)
     killall crond >/dev/null 2>&1
