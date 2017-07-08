@@ -7,7 +7,7 @@ fi
 
 case "$1" in
   start|restart|reload)
-    [ -f /etc/crontab ] && [ ! -d /var/spool/cron/crontabs ] && exit 0
+    [ ! -f /etc/crontab ] && [ ! -d /var/spool/cron/crontabs ] && exit 0
     killall crond >/dev/null 2>&1
     [ ! -d /var/spool/cron/crontabs ] && mkdir -p /var/spool/cron/crontabs
     chmod 750 /var/spool/cron/crontabs
