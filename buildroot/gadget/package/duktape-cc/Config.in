@@ -1,0 +1,9 @@
+config BR2_PACKAGE_DUKTAPE_CC
+	bool "duktape-cc CLI binary ('/usr/bin/js')"
+	help
+    ECMA/JavaScript interpreter based on the Duktape engine.
+
+	  https://github.com/stfwi/duktape-cc
+
+comment "duktape-cc needs c++ standard library"
+  depends on BR2_INSTALL_LIBSTDCPP

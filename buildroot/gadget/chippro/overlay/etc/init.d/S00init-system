@@ -10,60 +10,59 @@
 # - Start login shell on the USB (slave) port.
 #
 
-start() {
-  # Hostname
-  /bin/hostname -F /etc/hostname &>/dev/null
-
-  # Serial settings on UART1
-  /bin/stty -F /dev/ttyS1 115200
-
-  # Modules
-	echo -n "Probing modules: "
-	if [ ! -x /sbin/modprobe -o ! -f "/etc/modules" ]; then
-		echo "missing /etc/modules"
-	else
-		echo
-    grep '^[^#]' "/etc/modules" | \
-    while read module args; do
-      [ "$module" ] || continue
-      if /sbin/modprobe $module $args; then
-        echo "  $module loaded."
-      else
-        echo "  $module failed."
-      fi
-    done
-	fi
-
-  # File systems
-	/bin/mount -t proc proc /proc
-	/bin/mount -o remount,rw /
-	/bin/mkdir -p /dev/pts
-	/bin/mkdir -p /dev/shm
-	/bin/mount -a
-  /bin/hostname -F /etc/hostname
-  /bin/mount -t debugfs none /sys/kernel/debug
-	/bin/mount -t configfs none /sys/kernel/config
-	/bin/echo /sbin/mdev > /proc/sys/kernel/hotplug
-	/sbin/mdev -s
-
-  # Start login shell on the USB (slave) port.
-  start-stop-daemon -b -m -p /var/run/ttygs0.pid -S -x /usr/sbin/usb-serial-gadget-getty
-}
+if [ "$(whoami)" != "root" ]; then
+  echo "Need to be root." >&2
+  exit 1
+fi
 
 case "$1" in
-	start)
-		start
+	start|restart)
+
+    # Hostname
+    /bin/hostname -F /etc/hostname &>/dev/null
+
+    # Serial settings on UART1
+    /bin/stty -F /dev/ttyS1 115200
+
+    # Modules
+    if [ ! -x /sbin/modprobe -o ! -f "/etc/modules" ]; then
+      echo "(no /etc/modules)" >&2
+    else
+      echo
+      grep '^[^#]' "/etc/modules" | \
+      while read module args; do
+        [ ! -z "$module" ] || continue
+        if /sbin/modprobe $module $args; then
+          echo "  $module loaded."
+        else
+          echo "  $module failed."
+        fi
+      done
+    fi
+
+    # File systems
+    /bin/mount -t proc proc /proc
+    /bin/mount -o remount,rw /
+    /bin/mkdir -p /dev/pts
+    /bin/mkdir -p /dev/shm
+    /bin/mount -a
+    /bin/hostname -F /etc/hostname
+    /bin/mount -t debugfs none /sys/kernel/debug
+    /bin/mount -t configfs none /sys/kernel/config
+    /bin/echo /sbin/mdev > /proc/sys/kernel/hotplug
+    /sbin/mdev -s
+
+    # Start login shell on the USB (slave) port.
+    start-stop-daemon -b -m -p /var/run/ttygs0.pid -S -x /usr/sbin/usb-serial-gadget-getty
 		;;
 	stop)
 		;;
 	status)
 		echo "ok"
 		;;
-	restart)
-		start
-		;;
 	*)
 		echo "Usage: $0 {start|stop|status|restart}"
 		;;
 esac
-exit 0
+
+exit $?

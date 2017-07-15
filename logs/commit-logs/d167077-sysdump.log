@@ -1,0 +1,375 @@
+root@cos:~# ./sysdump
+----------------------------------------------------------------------
+uname -a
+----------------------------------------------------------------------
+Linux cos 4.4.66 #1 SMP PREEMPT Sun Jun 25 11:13:02 UTC 2017 armv7l GNU/Linux
+
+----------------------------------------------------------------------
+df
+----------------------------------------------------------------------
+Filesystem                Size      Used Available Use% Mounted on
+ubi0:rootfs             438.4M     20.8M    417.6M   5% /
+devtmpfs                 91.8M         0     91.8M   0% /dev
+tmpfs                   123.9M         0    123.9M   0% /dev/shm
+tmpfs                   123.9M     12.0K    123.9M   0% /tmp
+tmpfs                   123.9M     40.0K    123.9M   0% /run
+tmpfs                     5.0M     40.0K      5.0M   1% /var/log
+cgroup                  123.9M         0    123.9M   0% /sys/fs/cgroup
+
+----------------------------------------------------------------------
+mount
+----------------------------------------------------------------------
+ubi0:rootfs on / type ubifs (rw,relatime)
+devtmpfs on /dev type devtmpfs (rw,relatime,size=93996k,nr_inodes=23499,mode=755)
+proc on /proc type proc (rw,relatime)
+devpts on /dev/pts type devpts (rw,relatime,gid=5,mode=620)
+tmpfs on /dev/shm type tmpfs (rw,relatime,mode=777)
+tmpfs on /tmp type tmpfs (rw,relatime)
+tmpfs on /run type tmpfs (rw,nosuid,nodev,relatime,mode=755)
+sysfs on /sys type sysfs (rw,relatime)
+tmpfs on /var/log type tmpfs (rw,nosuid,nodev,relatime,size=5120k,mode=777)
+none on /sys/kernel/debug type debugfs (rw,relatime)
+none on /sys/kernel/config type configfs (rw,relatime)
+cgroup on /sys/fs/cgroup type tmpfs (rw,relatime,mode=755)
+cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,relatime,cpuset)
+cgroup on /sys/fs/cgroup/cpu type cgroup (rw,relatime,cpu)
+cgroup on /sys/fs/cgroup/cpuacct type cgroup (rw,relatime,cpuacct)
+cgroup on /sys/fs/cgroup/blkio type cgroup (rw,relatime,blkio)
+cgroup on /sys/fs/cgroup/memory type cgroup (rw,relatime,memory)
+cgroup on /sys/fs/cgroup/devices type cgroup (rw,relatime,devices)
+cgroup on /sys/fs/cgroup/freezer type cgroup (rw,relatime,freezer)
+cgroup on /sys/fs/cgroup/net_cls type cgroup (rw,relatime,net_cls)
+cgroup on /sys/fs/cgroup/perf_event type cgroup (rw,relatime,perf_event)
+cgroup on /sys/fs/cgroup/net_prio type cgroup (rw,relatime,net_prio)
+cgroup on /sys/fs/cgroup/pids type cgroup (rw,relatime,pids)
+
+----------------------------------------------------------------------
+free
+----------------------------------------------------------------------
+             total       used       free     shared    buffers     cached
+Mem:        253788      37452     216336         92          0      10680
+-/+ buffers/cache:      26772     227016
+Swap:            0          0          0
+----------------------------------------------------------------------
+ps
+----------------------------------------------------------------------
+PID   USER     TIME   COMMAND
+    1 root       0:01 init
+    2 root       0:00 [kthreadd]
+    3 root       0:00 [ksoftirqd/0]
+    4 root       0:00 [kworker/0:0]
+    5 root       0:00 [kworker/0:0H]
+    6 root       0:00 [kworker/u2:0]
+    7 root       0:00 [rcu_preempt]
+    8 root       0:00 [rcu_sched]
+    9 root       0:00 [rcu_bh]
+   10 root       0:00 [migration/0]
+   11 root       0:00 [watchdog/0]
+   12 root       0:00 [kdevtmpfs]
+   13 root       0:00 [netns]
+   14 root       0:00 [perf]
+   15 root       0:00 [khungtaskd]
+   16 root       0:00 [writeback]
+   17 root       0:00 [crypto]
+   18 root       0:00 [bioset]
+   19 root       0:00 [kblockd]
+   20 root       0:00 [devfreq_wq]
+   22 root       0:00 [kswapd0]
+   23 root       0:00 [vmstat]
+   24 root       0:00 [fsnotify_mark]
+   33 root       0:00 [kthrotld]
+   34 root       0:00 [bioset]
+   35 root       0:00 [bioset]
+   36 root       0:00 [bioset]
+   37 root       0:00 [bioset]
+   38 root       0:00 [bioset]
+   39 root       0:00 [kpsmoused]
+   40 root       0:00 [irq/66-axp20x_i]
+   41 root       0:00 [deferwq]
+   43 root       0:00 [irq/20-sunxi-mm]
+   44 root       0:00 [ubi_bgt0d]
+   45 root       0:00 [ubifs_bgt0_3]
+   49 root       0:00 /sbin/getty -L ttyS0 115200 vt100
+   57 root       0:00 [kworker/0:2]
+   60 root       0:00 [cfg80211]
+   62 root       0:00 [ksdioirqd/mmc0]
+   64 root       0:00 [bioset]
+   65 root       0:00 [bioset]
+   66 root       0:00 [bioset]
+   67 root       0:00 [bioset]
+   86 root       0:00 {usb-serial-gadg} /bin/sh /usr/sbin/usb-serial-gadget-get
+   90 root       0:00 /sbin/syslogd -n
+   94 root       0:00 /sbin/klogd -n
+  193 dbus       0:00 dbus-daemon --system
+  212 root       0:00 /usr/sbin/connmand -n
+  238 root       0:00 [ipv6_addrconf]
+  242 root       0:00 /usr/sbin/ntpd -g
+  246 root       0:01 /usr/sbin/wpa_supplicant -u
+  251 root       0:00 /usr/sbin/sshd
+  256 root       0:00 /usr/sbin/telnetd -F
+  271 root       0:00 [kworker/u2:3]
+  290 root       0:00 /sbin/rtk_hciattach -n -s 115200 /dev/ttyS2 rtk_h5
+  298 root       0:00 /usr/sbin/crond -l 10
+  305 root       0:00 [RTW_XMIT_THREAD]
+  306 root       0:00 [RTW_CMD_THREAD]
+  307 root       0:00 [RTWHALXT]
+  308 root       0:00 [RTWHALXT]
+  312 root       0:00 [kworker/u3:0]
+  313 root       0:00 [hci0]
+  314 root       0:00 [hci0]
+  316 root       0:00 [kworker/u3:1]
+ 1389 cos        0:00 -sh
+ 1391 root       0:00 -sh
+ 2764 root       0:00 {printsystem} /bin/sh ./printsystem
+ 2769 root       0:00 ps
+
+----------------------------------------------------------------------
+env
+----------------------------------------------------------------------
+USER=root
+SHLVL=2
+HOME=/root
+LOGNAME=root
+TERM=xterm
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+SHELL=/bin/sh
+PWD=/root
+TZ=UTC
+
+----------------------------------------------------------------------
+chippro device-tree-stati
+----------------------------------------------------------------------
+
+disabled display-backend@01e60000
+disabled display-frontend@01e00000
+disabled i2c@01c2b400
+disabled i2s@01c22400
+disabled ir@01c21800
+disabled lcd-controller@01c0c000
+disabled mmc@01c10000
+disabled mmc@01c11000
+disabled spdif@01c21000
+disabled spi@01c05000
+disabled spi@01c06000
+disabled spi@01c17000
+disabled tv-encoder@01c0a000
+okay     codec@01c22c00
+okay     i2c@01c2ac00
+okay     i2c@01c2ac00/pmic@34/usb_power_supply
+okay     i2c@01c2b000
+okay     lradc@01c22800
+okay     mmc@01c0f000
+okay     nand@01c03000
+okay     phy@01c13400
+okay     pwm@01c20e00
+okay     serial@01c28400
+okay     serial@01c28800
+okay     serial@01c28c00
+okay     sram-controller@01c00000/sram@00010000/sram-section@0000
+okay     usb@01c13000
+okay     usb@01c14000
+okay     usb@01c14400
+
+----------------------------------------------------------------------
+chippro pinctrl-stati
+----------------------------------------------------------------------
+PB2 pwm0
+PG13 pwm1
+PG3 uart1
+PG4 uart1
+PG5 uart1
+PG6 uart1
+PD2 uart2
+PD3 uart2
+PD4 uart2
+PD5 uart2
+PG9 uart3
+PG10 uart3
+PG11 uart3
+PG12 uart3
+PB0 i2c0
+PB1 i2c0
+PB15 i2c1
+PB16 i2c1
+PF0 mmc0
+PF1 mmc0
+PF2 mmc0
+PF3 mmc0
+PF4 mmc0
+PF5 mmc0
+PG2 gpio_in
+
+----------------------------------------------------------------------
+Files in /bin/ (98)
+ash base64 busybox cat catv chattr chgrp chmod chown clockdiff conspy
+cp cpio cttyhack date dd df dmesg dnsdomainname domainname dumpkmap
+echo ed egrep false fatattr fdflush fgrep findmnt fsync getopt grep
+gunzip gzip hostname hush ionice iostat ipcalc kbd_mode kill linux32
+linux64 ln login ls lsattr lsblk lzop makemime mkdir mknod mktemp
+more mount mountpoint mpstat mt mv netstat nice nisdomainname pidof
+ping ping6 pipe_progress printenv ps pwd reformime rev rm rmdir rpm
+run-parts scriptreplay sed setarch setserial sh sleep stat stty su
+sync tar touch tracepath traceroute6 true umount uname uncompress
+usleep vi watch ypdomainname zcat
+
+Files in /usr/bin/ (246)
+[ [[ ar arpaname awk basename beep blkdiscard bunzip2 bzcat bzcmp
+bzdiff bzegrep bzfgrep bzgrep bzip2 bzip2recover bzless bzmore cal
+cgroupfs-mount cgroupfs-umount chpst chrt chvt cksum clear cmp col
+colcrt colrm column comm connmanctl convert-dtsv0 crontab cryptpw cut
+dbus-cleanup-sockets dbus-daemon dbus-launch dbus-monitor
+dbus-run-session dbus-send dbus-test-tool
+dbus-update-activation-environment dbus-uuidgen dc deallocvt delv
+diff dirname dos2unix dtc du dumpleases eject env envdir envuidgid
+expand expr fdtdump fdtget fdtput fgconsole filan find flock fold
+free ftpget ftpput fuser gapplication gdbus getopt gio
+gio-querymodules gresource groups gsettings hd head hexdump
+hostapd_cli hostid id install ionice ipcmk ipcrm ipcs iptables-xml
+isosize killall kmod last less linux32 linux64 logger logname look
+lpq lpr lscpu lsipc lslocks lsns lsof lspci lsusb lzcat lzma lzopcat
+man mcookie md5sum mdig mesg microcom mkfifo mkpasswd named-rrchecker
+namei nano nc netcat nmeter nohup nsenter od openssl openvt passwd
+patch pcregrep pcretest pgrep picocom pkill pmap printf prlimit
+procan pscan pstree pwdx readlink realpath renice reset resize rev
+rpm2cpio rsync runsv runsvdir rx scp script scriptreplay seq
+set_antenna setarch setkeycodes setsid setuidgid sftp sha1sum
+sha256sum sha3sum sha512sum showkey shuf smemcap socat softlimit sort
+spi-config spi-pipe split ssh ssh-add ssh-agent ssh-keygen
+ssh-keyscan strace strace-log-merge strings sum sv tac tail tailf
+taskset tcpsvd tee telnet test tftp time timeout top tr traceroute
+traceroute6 tree truncate tty ttysize udhcpc6 udpsvd uname26 unexpand
+uniq unix2dos unlink unlzma unlzop unshare unxz unzip uptime users
+uudecode uuencode uuidgen vlock volname w w_start w_stop wall wc wget
+whereis which who whoami whois xargs xz xzcat yes
+
+Files in /sbin/ (109)
+acpid adjtimex arp arping blkdiscard blkid blockdev bootchartd bridge
+bt_reset cfdisk chcpu ctrlaltdel ctstat depmod devmem dhcpcd fbsplash
+fdisk findfs freeramdisk fsck fsck.minix fsfreeze fstrim genl getty
+halt hdparm hwclock ifconfig ifdown ifenslave ifstat ifup init
+inotifyd insmod ip ipaddr iplink ipmaddr iproute iprule iptunnel
+iwconfig iwgetid iwlist iwpriv iwspy klogd lnstat loadkmap logread
+losetup lsmod makedevs mdev mii-tool mkdosfs mke2fs mkfs mkfs.ext2
+mkfs.minix mkfs.vfat mkswap modinfo modprobe nameif nologin nstat
+pivot_root plipconfig poweroff raidautorun rarp rarpd rdisc reboot
+rmmod route routef routel rtacct rtk_hciattach rtmon rtpr rtstat
+runlevel setconsole sfdisk slattach ss start-stop-daemon sulogin
+swaplabel swapoff swapon switch_root sysctl syslogd tc tunctl udhcpc
+uevent vconfig watchdog wipefs zcip
+
+Files in /usr/sbin/ (110)
+add-shell addgroup adduser arping automount brctl chat chippro
+chpasswd chroot connmand connmand-wait-online crond ddns-confgen
+delgroup deluser dhcprelay dnsd dnsmasq dnssec-dsfromkey
+dnssec-importkey dnssec-keyfromlabel dnssec-keygen dnssec-revoke
+dnssec-settime dnssec-signzone dnssec-verify ether-wake fakeidentd
+fbset fdformat flash_erase flash_lock flash_unlock flashcp ftpd
+fw_printenv fw_setenv genrandom hostapd httpd i2cdetect i2cdump
+i2cget i2cset ifplugd in.tftpd inetd ip6tables ip6tables-restore
+ip6tables-save iptables iptables-restore iptables-save isc-hmac-fixup
+iw killall5 ldattach loadfont lpd lwresd mtd_debug mtdinfo named
+named-checkconf named-checkzone named-compilezone named-journalprint
+nanddump nandtest nandwrite nbd-client nsec3hash ntpd popmaildir
+powertop rdate rdev readahead readprofile remove-shell rndc
+rndc-confgen rtcwake sendmail setfont setlogcons sshd svlogd telnetd
+tftpd tsig-keygen ubiattach ubiblock ubicrc32 ubidetach ubiformat
+ubimkvol ubinfo ubinize ubirename ubirmvol ubirsvol ubiupdatevol
+udhcpd usb-serial-gadget-getty wpa_cli wpa_passphrase wpa_supplicant
+xtables-multi
+
+Files without busybox links in PATH: (222)
+mountpoint kill ping netstat traceroute6 clockdiff hostname dmesg
+lsblk mount findmnt tracepath umount busybox w getopt setarch col dtc
+gio rev scp ssh w_start gresource ssh-agent chrt delv kmod mdig look
+lsof lsns nano sftp tree wget spi-config ionice openssl dbus-daemon
+cgroupfs-mount dbus-run-session ssh-keyscan logger cgroupfs-umount
+dbus-update-activation-environment mcookie fdtdump netcat taskset
+picocom whereis convert-dtsv0 strace-log-merge gapplication gsettings
+scriptreplay connmanctl bzcat bzip2 colrm eject gio-querymodules
+procan filan flock gdbus ipcmk lscpu lsipc namei renice pcregrep
+pcretest spi-pipe dbus-launch hexdump reset rsync tailf socat lslocks
+dbus-send script setsid ssh-add named-rrchecker dbus-test-tool strace
+hostapd_cli bzip2recover dbus-uuidgen w_stop dbus-monitor bzdiff
+bzgrep colcrt column bzmore isosize prlimit bunzip2 ssh-keygen fdtget
+fdtput dbus-cleanup-sockets uuidgen set_antenna arpaname ip tc ss arp
+fstrim genl mkfs rarp rtpr fsfreeze ifstat swaplabel slattach
+iptunnel lnstat mkswap nameif iwconfig ifconfig ctrlaltdel blkid
+chcpu fdisk nologin nstat pivot_root rarpd rdisc route rtmon
+blkdiscard routef routel sfdisk rtk_hciattach rtacct ipmaddr bt_reset
+swapon arping plipconfig mii-tool cfdisk bridge blockdev dhcpcd
+wipefs swapoff findfs iw ubiattach nanddump nandtest ntpd rndc sshd
+automount ubidetach hostapd i2cdetect rtcwake dnssec-dsfromkey
+nsec3hash mtdinfo dnssec-revoke ubiformat named-journalprint
+flash_lock in.tftpd wpa_supplicant xtables-multi flash_erase lwresd
+i2cdump ldattach nandwrite dnssec-verify ubiblock ubicrc32
+dnssec-importkey ubimkvol connmand-wait-online ubirmvol ubirsvol
+rndc-confgen named dnssec-signzone wpa_passphrase ddns-confgen
+flash_unlock isc-hmac-fixup ubiupdatevol genrandom flashcp ubinfo
+dnsmasq readprofile mtd_debug chippro dnssec-keyfromlabel wpa_cli
+named-checkconf dnssec-keygen named-checkzone ubirename i2cget i2cset
+dnssec-settime usb-serial-gadget-getty fw_printenv connmand ubinize
+
+----------------------------------------------------------------------
+Kernel modules
+----------------------------------------------------------------------
+msdos.ko vfat.ko fat.ko nls_utf8.ko nls_cp437.ko nls_iso8859-1.ko
+ext4.ko jbd2.ko autofs4.ko btrfs.ko mbcache.ko overlay.ko
+crc-ccitt.ko raid6_pq.ko libcrc32c.ko crc-itu-t.ko psnap.ko stp.ko
+p8022.ko llc.ko ip_tunnel.ko xfrm4_mode_beet.ko inet_lro.ko
+udp_diag.ko tcp_diag.ko udp_tunnel.ko tunnel4.ko
+xfrm4_mode_transport.ko nf_nat_ipv4.ko nf_nat_masquerade_ipv4.ko
+ipt_ah.ko nf_defrag_ipv4.ko ipt_MASQUERADE.ko iptable_nat.ko
+nf_conntrack_ipv4.ko esp4.ko inet_diag.ko xfrm4_mode_tunnel.ko
+xfrm6_mode_beet.ko ip6_tunnel.ko xfrm6_tunnel.ko
+xfrm6_mode_transport.ko ip6_udp_tunnel.ko tunnel6.ko ipcomp6.ko
+ip6t_mh.ko ip6t_rt.ko ip6t_eui64.ko ip6t_hbh.ko ip6t_ipv6header.ko
+ip6t_frag.ko ip6table_filter.ko ip6_tables.ko ip6t_ah.ko esp6.ko
+mip6.ko sit.ko ah6.ko xfrm6_mode_tunnel.ko ipv6.ko unix.ko
+xfrm_ipcomp.ko xfrm_algo.ko xfrm_user.ko dns_resolver.ko af_packet.ko
+nf_nat.ko nf_nat_tftp.ko nf_conntrack.ko nf_conntrack_ftp.ko
+xt_conntrack.ko xt_addrtype.ko xt_ecn.ko xt_hl.ko
+nf_conntrack_tftp.ko nf_nat_ftp.ko xt_nat.ko bnep.ko hidp.ko
+rfcomm.ko bluetooth.ko cls_cgroup.ko cfg80211.ko bridge.ko
+br_netfilter.ko mac80211.ko xor-neon.ko sha512-arm.ko
+sha1-arm-neon.ko ghash-arm-ce.ko aes-arm-ce.ko aes-arm-bs.ko
+sha1-arm.ko aes-arm.ko sha256-arm.ko sha2-arm-ce.ko sha1-arm-ce.ko
+encrypted-keys.ko cmac.ko authencesn.ko jitterentropy_rng.ko
+gf128mul.ko arc4.ko md4.ko md5.ko echainiv.ko sha1_generic.ko
+ghash-generic.ko authenc.ko cryptd.ko cbc.ko ccm.ko drbg.ko ctr.ko
+cts.ko ecb.ko ablk_helper.ko seqiv.ko sha256_generic.ko
+des_generic.ko hmac.ko xor.ko xts.ko gcm.ko w1-gpio.ko wire.ko
+w1_bq27000.ko w1_therm.ko w1_smem.ko w1_ds2406.ko w1_ds2408.ko
+w1_ds2413.ko w1_ds2423.ko w1_ds2431.ko w1_ds2760.ko w1_ds2780.ko
+w1_ds2781.ko w1_ds28e04.ko i2c-stub.ko i2c-algo-bit.ko
+i2c-arb-gpio-challenge.ko i2c-gpio.ko usbhid.ko sun4i_lradc.ko
+industrialio.ko mmc_block.ko sdhci-of-at91.ko dw_mmc.ko
+sdhci-of-arasan.ko dw_mmc-exynos.ko sdhci-pltfm.ko dw_mmc-pltfm.ko
+sdhci.ko ppp_async.ko ppp_generic.ko macvlan.ko slhc.ko ipvlan.ko
+macvtap.ko veth.ko tun.ko dummy.ko vxlan.ko gluebi.ko
+phy-sun4i-usb.ko phy-sun9i-usb.ko spi-bitbang.ko spidev.ko
+spi-sun4i.ko spi-sun6i.ko spi-gpio.ko phy-gpio-vbus-usb.ko
+phy-generic.ko usbcore.ko ohci-platform.ko ohci-hcd.ko ehci-hcd.ko
+ehci-platform.ko ezusb.ko sunxi.ko musb_hdrc.ko usb-common.ko
+usb-otg-fsm.ko ulpi.ko udc-core.ko libcomposite.ko g_dbgp.ko
+g_acm_ms.ko gadgetfs.ko g_multi.ko g_ffs.ko g_serial.ko
+g_mass_storage.ko usb_f_ss_lb.ko usb_f_acm.ko usb_f_ecm.ko
+usb_f_eem.ko usb_f_serial.ko usb_f_obex.ko u_serial.ko
+usb_f_ecm_subset.ko u_ether.ko usb_f_mass_storage.ko usb_f_fs.ko
+usb_f_ncm.ko usb_f_rndis.ko regmap-spi.ko rng-core.ko gpio-pcf857x.ko
+gpio-adnp.ko gpio-adp5588.ko gpio-pca953x.ko gpio-mcp23s08.ko
+gpio-max7300.ko gpio-max7301.ko gpio-max730x.ko gpio-max732x.ko
+ledtrig-heartbeat.ko ledtrig-gpio.ko ledtrig-transient.ko
+ledtrig-oneshot.ko ledtrig-default-on.ko ledtrig-timer.ko
+ledtrig-camera.ko ledtrig-backlight.ko ad525x_dpot.ko bmp085-spi.ko
+ti_dac7512.ko ad525x_dpot-spi.ko bmp085-i2c.ko hmc6352.ko
+ad525x_dpot-i2c.ko ds1682.ko apds9802als.ko max6875.ko
+eeprom_93xx46.ko at24.ko at25.ko bmp085.ko pwm-regulator.ko
+cpufreq_stats.ko cpufreq-dt.ko governor_userspace.ko
+governor_simpleondemand.ko governor_powersave.ko
+governor_performance.ko null_blk.ko cryptoloop.ko nbd.ko loop.ko
+brd.ko btmrvl.ko btmrvl_sdio.ko hci_vhci.ko hci_uart.ko btintel.ko
+btrtl.ko btsdio.ko btbcm.ko btusb.ko evdev.ko ff-memless.ko
+thermal_sys.ko sun4i-ss.ko 8723ds.ko
+
+----------------------------------------------------------------------
+root@cos:~#

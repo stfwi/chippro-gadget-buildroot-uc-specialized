@@ -1,0 +1,47 @@
+#!/bin/sh
+
+[ -f /etc/network/iptables.rules ] || [ -f /etc/network/ip6tables.rules ] || exit 0
+
+if [ "$(whoami)" != "root" ]; then
+  echo "Need to be root." >&2
+  exit 1
+fi
+
+flush4() {
+  /usr/sbin/iptables -F INPUT
+  /usr/sbin/iptables -F OUTPUT
+  /usr/sbin/iptables -F FORWARD
+  /usr/sbin/iptables -F
+  /bin/true
+}
+
+flush6() {
+  /usr/sbin/ip6tables -F INPUT
+  /usr/sbin/ip6tables -F OUTPUT
+  /usr/sbin/ip6tables -F FORWARD
+  /usr/sbin/ip6tables -F
+  /bin/true
+}
+
+
+case "$1" in
+  start)
+	echo "Loading iptables rules ..."
+	[ -f /etc/network/iptables.rules  ] && flush4 && /usr/sbin/iptables-restore < /etc/network/iptables.rules
+	[ -f /etc/network/ip6tables.rules ] && flush6 && /usr/sbin/ip6tables-restore < /etc/network/ip6tables.rules
+	;;
+  stop)
+	echo "Flushing iptables rules ..."
+        flush4
+        flush6
+	;;
+  restart|reload)
+	"$0" stop
+	"$0" start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?

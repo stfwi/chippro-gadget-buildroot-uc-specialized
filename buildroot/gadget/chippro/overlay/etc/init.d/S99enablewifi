@@ -1,19 +1,14 @@
 #!/bin/sh
-# Enables wifi, currently only connmanctl.
+
+if [ "$(whoami)" != "root" ]; then
+  echo "Need to be root." >&2
+  exit 1
+fi
 
 case "$1" in
   start|restart|reload)
-    if [ $(which connmanctl) != "" ]; then
-      printf "Enable wifi ..."
-      connmanctl enable wifi
-      if [ $? -eq 0 ]; then
-        echo "OK"
-        exit 0
-      else
-        echo "FAILED"
-        exit 1
-      fi
-    fi
+    [ $(which connmanctl) != "" ] || exit 0
+    connmanctl enable wifi
     ;;
   stop)
     exit 0
