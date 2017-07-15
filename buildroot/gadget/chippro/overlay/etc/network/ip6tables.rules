@@ -1,17 +1,13 @@
 #
 *filter
-:INPUT ACCEPT [1475:196968]
+:INPUT ACCEPT [116:11560]
 :FORWARD ACCEPT [0:0]
-:OUTPUT ACCEPT [1357:154832]
--A INPUT -s ::1 -d ::1 -j ACCEPT
--A INPUT -i lo -j ACCEPT
+:OUTPUT ACCEPT [79:9428]
+-A INPUT -i lo -s ::1 -d ::1 -j ACCEPT
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 -A INPUT -s fe80::/10 -j ACCEPT
 -A INPUT -d ff00::/8 -j ACCEPT
 -A INPUT -p icmpv6 -j ACCEPT
-
-# need connection v6 tracking in kernel first
-#-A INPUT -i lo -m state --state ESTABLISHED,RELATED -j ACCEPT
-#-A INPUT -j DROP
-#
+-A INPUT -j DROP
 COMMIT
 #

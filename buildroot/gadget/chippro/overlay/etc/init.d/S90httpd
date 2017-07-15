@@ -7,12 +7,17 @@ fi
 
 case "$1" in
   start)
-    if [ -f /usr/bin/civetweb ] && [ -f /etc/civetweb.conf ]; then
+    if [ "$(/usr/bin/find /var/www/ -type f | wc -l)" -eq 0 ]; then
+      echo "Skipping httpd, nothing in /var/www."
+    elif [ -f /usr/bin/civetweb ] && [ -f /etc/civetweb.conf ]; then
       printf "Starting civetweb server ... "
       start-stop-daemon -S -q -m -b -p /var/run/civetweb.pid --exec /usr/bin/civetweb -- /etc/civetweb.conf
     elif [ -f /usr/sbin/httpd ] && [ -f /etc/httpd.conf ]; then
       printf "Starting httpd ... "
       /usr/sbin/httpd -u www-data:www-data -h /var/www -c /etc/httpd.conf
+      [ $? -eq 0 ] && echo done || echo failed
+    else
+      echo "Skipping httpd, no server installed or no config in /etc/."
     fi
     ;;
   stop)
