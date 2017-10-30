@@ -1,5 +1,5 @@
 config BR2_PACKAGE_DUKTAPE_CC
-	bool "duktape-cc CLI binary ('/usr/bin/js')"
+	bool "duktape-cc CLI binary ('/usr/bin/djs')"
 	help
     ECMA/JavaScript interpreter based on the Duktape engine.
 
