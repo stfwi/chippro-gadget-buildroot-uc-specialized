@@ -1,6 +1,12 @@
 # CHIPpro `gadget-buildroot` specialisation with focus on dynamic hardware configuration
 
 ---
+## Obsolete/Deprecated project
+***Unfortunately the hardware this project is based on is not available anymore,
+therefore I suggest switching e.g. to PI/PI zero, etc.***
+---
+
+---
 Forked from: @NextThingCo [gadget-buildroot](https://github.com/NextThingCo/gadget-buildroot).
 ---
 
